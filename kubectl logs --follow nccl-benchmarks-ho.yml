@@ -1,0 +1,1 @@
+kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-04-29-133629-pod0 -c all-reduce-test
