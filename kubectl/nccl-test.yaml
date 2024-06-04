@@ -49,21 +49,25 @@ spec:
     - name: nccl-test
       image: determinedai/environments:cuda-11.8-pytorch-2.0-gpu-0.31.1
       imagePullPolicy: Always
-      command:
-        - /bin/sh
-        - -c
+      command: ["sh", "-c"] # Use sh to execute multiple commands
+      args: 
         - |
-          cat >/scripts/allgather.sh <<EOF
-          #!/bin/bash
-          /scripts/init_ssh.sh \${@};
-          pushd /scripts;
-          /scripts/gen_hostfiles.sh \${@};
-          popd;
-          BENCHMARK=all_gather_perf NHOSTS=2 NCCL_LIB_DIR="${LD_LIBRARY_PATH}" LD_LIBRARY_PATH="${LD_LIBRARY_PATH}" /scripts/demo-run-nccl-test-tcpxo-via-mpi.sh
-          EOF
-          chmod +x /scripts/allgather.sh
-          service ssh restart;
-          sleep infinity;
+          python -c "print('******* All Reduce Network Benchmark Starts *******')"
+          rm -f /usr/share/all_reduce_benchmarks/workload_terminated
+          python -c "print('Number of nodes participating: {{ $node_count }}')"
+          echo Master address: $MASTER_ADDR
+          git clone https://github.com/stas00/ml-engineering.git
+          python -u -m torch.distributed.run \
+            --nproc_per_node 8 \
+            --nnodes {{ $node_count }} \
+            --rdzv_endpoint nccl-host-2:6000 \
+            --rdzv_backend c10d \
+            --max_restarts 0 \
+            --role `hostname -s`: \
+            --tee 3 \
+            ml-engineering/network/benchmarks/all_reduce_bench.py
+          python -c "print('******* All Reduce Network Benchmark Completed *******')"
+          while true; do echo 'Running'; sleep 60; done"
       env:
         - name: LD_LIBRARY_PATH
           value: /usr/local/nvidia/lib64
