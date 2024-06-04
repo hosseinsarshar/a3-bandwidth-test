@@ -114,6 +114,7 @@ spec:
         python -c "print('******* All Reduce Network Benchmark Starts *******')"
         rm -f /usr/share/all_reduce_benchmarks/workload_terminated
         python -c "print('Number of nodes participating: {{ $node_count }}')"
+        echo Master address: $MASTER_ADDR
         git clone https://github.com/stas00/ml-engineering.git
         python -u -m torch.distributed.run \
           --nproc_per_node 8 \
@@ -124,7 +125,8 @@ spec:
           --role `hostname -s`: \
           --tee 3 \
           ml-engineering/network/benchmarks/all_reduce_bench.py
-        python -c "print('******* All Reduce Network Benchmark Completes *******')"
+        python -c "print('******* All Reduce Network Benchmark Completed *******')"
+        while true; do echo 'Running'; sleep 60; done"
     securityContext:
       privileged: true
       capabilities:

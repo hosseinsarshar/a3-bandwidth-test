@@ -6,8 +6,8 @@ cluster:
   gcsBucket: null
 
 ncclBenchmarks:
-  image: "nvcr.io/nvidia/pytorch"
-  tag: "23.09-py3"
+  image: "classicboyir/dbrx_llm"
+  tag: "11"
   # A comma-separated list of benchmarks to run.
   benchmarks: "all_gather_perf,all_reduce_perf,sendrecv_perf"
   # A comma-separated list of hex masks for the benchmarks.

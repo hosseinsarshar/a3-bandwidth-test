@@ -1,0 +1,42 @@
+name: Mistral-7B-Instruct-v0.2 bf16 32 gpus batch 2
+debug: true
+environment:
+  environment_variables:
+    - NCCL_DEBUG=INFO
+    - NCCL_LIB_DIR=/usr/local/nvidia/lib64
+  image: determinedai/environments:cuda-11.8-pytorch-2.0-gpu-0.31.1
+resources:
+  slots_per_trial: 32
+searcher:
+  name: single
+  max_length:
+    batches: 100
+  metric: eval_accuracy
+  smaller_is_better: false
+hyperparameters:
+  model: "mistralai/Mistral-7B-Instruct-v0.2"
+  dataset_subset: "medium"
+  lora: false
+  training_args:
+    output_dir: "/checkpoints/huggingface"
+    max_steps: 100
+    bf16: true
+    per_device_train_batch_size: 2
+    per_device_eval_batch_size: 4
+    evaluation_strategy: "steps"
+    eval_steps: 10
+    logging_strategy: "steps"
+    logging_steps: 10
+    save_strategy: "steps"
+    save_steps: 100
+    learning_rate: 1e-5
+    deepspeed: "ds_configs/ds_config_stage_3.json"
+entrypoint: >-
+  python -m determined.launch.deepspeed
+  python finetune.py
+checkpoint_storage:
+ type: directory
+ container_path: /checkpoints
+max_restarts: 0
+profiling:
+ enabled: true

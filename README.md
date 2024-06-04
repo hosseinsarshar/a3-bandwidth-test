@@ -1,4 +1,6 @@
-## All reduce network bandwidth test
+# All reduce network bandwidth test on A3 GKE Cluster
+
+This project helps to run All Reduce network benchmark on A3 GKE clusters with 800 Gbps bandwidth. The [a3-cluster.sh](a3-cluster.sh) provide the steps needed to create and configure the GKE cluster in addition to 
 
 Deploy the helm package
 ```bash
@@ -12,8 +14,15 @@ kubectl get pods | grep "${USER}-nccl-bm.*pod0"
 
 Get the logs
 ```bash
-kubectl logs --follow <master-pod-name> -c all-reduce-test
+kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-05-14-121339-pod0 -c all-reduce-test
 ```
+
+Login to a pod
+```bash
+kubectl exec -it  nccl-benchmarks-hosseins-nccl-bm-2024-05-14-121339-pod0 -c all-reduce-test
+```
+
+kubectl describe pod nccl-benchmarks-hosseins-nccl-bm-2024-05-14-121339-pod0
 
 You should get the following log:
 
