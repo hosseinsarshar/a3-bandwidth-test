@@ -14,7 +14,7 @@ kubectl get pods | grep "${USER}-nccl-bm.*pod0"
 
 Get the logs
 ```bash
-kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-05-14-121339-pod0 -c all-reduce-test
+kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-06-04-184528-pod0 -c all-reduce-test
 ```
 
 Login to a pod
@@ -46,4 +46,14 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 [gke-a3-cluster-a3-cluster-node-pool-2dccbe7f-j25n:0]:
 ******* All Reduce Network Benchmark Completes *******
 ```
- 
+
+## Dist. Pytorch All-reduce
+
+$ 1
+$ 2
+$ 3
+$ 4
+$ 5
+$ The average bandwidth of all_reduce with a 4.0GB payload (5 trials, 16 ranks):
+$  algbw: 180.721 GBps (1445.8 Gbps)
+$  busbw: 338.852 GBps (2710.8 Gbps)

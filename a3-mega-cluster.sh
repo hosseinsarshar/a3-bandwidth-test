@@ -70,6 +70,12 @@ kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container
 
 kubectl exec --stdin --tty --container=nccl-test nccl-test-host-1 -- /scripts/allgather.sh nccl-host-1 nccl-host-2
 
+kubectl exec -it --tty --container=nccl-test nccl-test-host-1 -- /bin/bash
+
+kubectl apply -f /Users/hosseins/projects/a3-bandwidth-test/kubectl/nccl-test.yaml
+kubectl logs --follow nccl-test-host-1 -c nccl-test
+kubectl logs --follow nccl-test-host-2 -c nccl-test
+
 
 #                                                              out-of-place                       in-place          
 #       size         count      type   redop    root     time   algbw   busbw #wrong     time   algbw   busbw #wrong
@@ -105,3 +111,21 @@ kubectl exec --stdin --tty --container=nccl-test nccl-test-host-1 -- /scripts/al
   2147483648      33554432     float    none      -1    11852  181.20  169.87      0    10804  198.77  186.35      0
   4294967296      67108864     float    none      -1    21990  195.32  183.11      0    22999  186.74  175.07      0
   8589934592     134217728     float    none      -1    44150  194.56  182.40      0    44420  193.38  181.29      0
+
+
+  Deploy the helm package
+```bash
+helm install "${USER}-nccl-bm" .
+```
+
+Find your `master pod`
+```bash
+kubectl get pods | grep "${USER}-nccl-bm.*pod0"
+```
+
+Get the logs
+```bash
+kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-06-04-193259-pod0 -c nccl-test
+```
+
+

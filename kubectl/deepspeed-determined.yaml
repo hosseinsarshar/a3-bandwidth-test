@@ -1,0 +1,214 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name:  nccl-host-1
+spec:
+  selector:
+    name:  nccl-host-1
+  clusterIP: None
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nccl-host-2
+spec:
+  selector:
+    name: nccl-host-2
+  clusterIP: None
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nccl-test-host-1
+  labels:
+    name: nccl-host-1
+spec:
+  hostname: host1
+  subdomain: nccl-host-1
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+  containers:
+    - name: tcpxo-daemon
+      image: us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/tcpgpudmarxd-dev:v1.0.8
+      imagePullPolicy: Always
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          set -ex
+          chmod 755 /fts/entrypoint_rxdm_container.sh
+          /fts/entrypoint_rxdm_container.sh --num_hops=2 --num_nics=8 --uid= --alsologtostderr
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - name: nvidia-install-dir-host
+          mountPath: /usr/local/nvidia
+      env:
+        - name: LD_LIBRARY_PATH
+          value: /usr/local/nvidia/lib64
+    - name: nccl-test
+      image: us-docker.pkg.dev/deeplearning-platform-release/gcr.io/base-cu121.py310
+      imagePullPolicy: Always
+      command: ["sh", "-c"] # Use sh to execute multiple commands
+      args:
+        - |
+          python -c "print('******* All Reduce Network Benchmark Starts *******')"
+          rm -f /usr/share/all_reduce_benchmarks/workload_terminated
+          export NCCL_LIB_DIR="/usr/local/nvidia/lib64"
+          export NCCL_FASTRAK_IFNAME=eth1,eth2,eth3,eth4,eth5,eth6,eth7,eth8
+          export NCCL_FASTRAK_CTRL_DEV=eth0
+          export NCCL_SOCKET_IFNAME=eth0
+          export NCCL_CROSS_NIC=0
+          export NCCL_ALGO=Ring,Tree
+          export NCCL_PROTO=Simple
+          export NCCL_MIN_NCHANNELS=4
+          export NCCL_P2P_NET_CHUNKSIZE=524288
+          export NCCL_P2P_PCI_CHUNKSIZE=524288
+          export NCCL_P2P_NVL_CHUNKSIZE=1048576
+          export NCCL_FASTRAK_NUM_FLOWS=2
+          export NCCL_FASTRAK_ENABLE_CONTROL_CHANNEL=0
+          export NCCL_BUFFSIZE=8388608
+          export NCCL_FASTRAK_USE_SNAP=1
+          export NCCL_FASTRAK_USE_LLCM=1
+          export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+          export NCCL_NET_GDR_LEVEL=PIX
+          export NCCL_FASTRAK_ENABLE_HOTPATH_LOGGING=0
+          export NCCL_TUNER_PLUGIN=libnccl-tuner.so
+          export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
+          export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
+          export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
+          export NCCL_NVLS_ENABLE=0
+
+          python -c "print('Number of nodes participating: 2')"
+          echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
+          echo MASTER_ADDR: $MASTER_ADDR
+          git clone https://github.com/stas00/ml-engineering.git
+          python -u -m torch.distributed.run \
+            --nproc_per_node 8 \
+            --nnodes 2 \
+            --rdzv_endpoint nccl-host-1:6000 \
+            --rdzv_backend c10d \
+            --max_restarts 0 \
+            --role `hostname -s`: \
+            --tee 3 \
+            ml-engineering/network/benchmarks/all_reduce_bench.py
+          python -c "print('******* All Reduce Network Benchmark Completed *******')"
+          while true; do echo 'Running'; sleep 60; done"
+      env:
+        - name: LD_LIBRARY_PATH
+          value: /usr/local/nvidia/lib64
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - name: nvidia-install-dir-host
+          mountPath: /usr/local/nvidia
+        - name: shared-memory
+          mountPath: /dev/shm
+      resources:
+        limits:
+          nvidia.com/gpu: 8
+  volumes:
+    - name: nvidia-install-dir-host
+      hostPath:
+        path: /home/kubernetes/bin/nvidia
+    - name: shared-memory
+      emptyDir:
+        medium: "Memory"
+        sizeLimit: 1Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nccl-test-host-2
+  labels:
+    name: nccl-host-2
+spec:
+  hostname: host2
+  subdomain: nccl-host-2
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+  containers:
+    - name: tcpxo-daemon
+      image: us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/tcpgpudmarxd-dev:v1.0.8
+      imagePullPolicy: Always
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          set -ex
+          chmod 755 /fts/entrypoint_rxdm_container.sh
+          /fts/entrypoint_rxdm_container.sh --num_hops=2 --num_nics=8 --uid= --alsologtostderr
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - name: nvidia-install-dir-host
+          mountPath: /usr/local/nvidia
+      env:
+        - name: LD_LIBRARY_PATH
+          value: /usr/local/nvidia/lib64
+    - name: nccl-test
+      image: us-docker.pkg.dev/deeplearning-platform-release/gcr.io/base-cu121.py310
+      imagePullPolicy: Always
+      command: ["sh", "-c"] # Use sh to execute multiple commands
+      args:
+        - |
+          python -c "print('******* All Reduce Network Benchmark Starts *******')"
+          rm -f /usr/share/all_reduce_benchmarks/workload_terminated
+          export NCCL_LIB_DIR="/usr/local/nvidia/lib64"
+          export NCCL_FASTRAK_IFNAME=eth1,eth2,eth3,eth4,eth5,eth6,eth7,eth8
+          export NCCL_FASTRAK_CTRL_DEV=eth0
+          export NCCL_SOCKET_IFNAME=eth0
+          export NCCL_CROSS_NIC=0
+          export NCCL_ALGO=Ring,Tree
+          export NCCL_PROTO=Simple
+          export NCCL_MIN_NCHANNELS=4
+          export NCCL_P2P_NET_CHUNKSIZE=524288
+          export NCCL_P2P_PCI_CHUNKSIZE=524288
+          export NCCL_P2P_NVL_CHUNKSIZE=1048576
+          export NCCL_FASTRAK_NUM_FLOWS=2
+          export NCCL_FASTRAK_ENABLE_CONTROL_CHANNEL=0
+          export NCCL_BUFFSIZE=8388608
+          export NCCL_FASTRAK_USE_SNAP=1
+          export NCCL_FASTRAK_USE_LLCM=1
+          export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+          export NCCL_NET_GDR_LEVEL=PIX
+          export NCCL_FASTRAK_ENABLE_HOTPATH_LOGGING=0
+          export NCCL_TUNER_PLUGIN=libnccl-tuner.so
+          export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
+          export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
+          export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
+          export NCCL_NVLS_ENABLE=0
+          python -c "print('Number of nodes participating: 2')"
+          echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
+          echo MASTER_ADDR: $MASTER_ADDR
+          git clone https://github.com/stas00/ml-engineering.git
+          python -u -m torch.distributed.run \
+            --nproc_per_node 8 \
+            --nnodes 2 \
+            --rdzv_endpoint nccl-host-1:6000 \
+            --rdzv_backend c10d \
+            --max_restarts 0 \
+            --role `hostname -s`: \
+            --tee 3 \
+            ml-engineering/network/benchmarks/all_reduce_bench.py
+          python -c "print('******* All Reduce Network Benchmark Completed *******')"
+          while true; do echo 'Running'; sleep 60; done"
+      env:
+        - name: LD_LIBRARY_PATH
+          value: /usr/local/nvidia/lib64
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - name: shared-memory
+          mountPath: /dev/shm
+      resources:
+        limits:
+          nvidia.com/gpu: 8
+  volumes:
+    - name: nvidia-install-dir-host
+      hostPath:
+        path: /home/kubernetes/bin/nvidia
+    - name: shared-memory
+      emptyDir:
+        medium: "Memory"
+        sizeLimit: 1Gi
