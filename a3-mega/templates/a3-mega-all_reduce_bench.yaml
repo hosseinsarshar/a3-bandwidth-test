@@ -1,0 +1,211 @@
+# yamllint disable
+# {{- $requiredVar := .Values.cluster.nNodes | required ".Values.cluster.nNodes is required, add --set cluster.nNodes=2" -}}
+
+{{ $timestamp := now | date "2006-01-02-150405" }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: "nccl-benchmarks-{{ $.Release.Name }}-{{ $timestamp }}"
+spec:
+  selector:
+    name: "nccl-benchmarks-{{ $.Release.Name }}-{{ $timestamp }}"
+  clusterIP: None
+---
+{{ $node_count := .Values.cluster.nNodes | int }}
+{{ $superblock_count := .Values.cluster.nSuperblocks | int }}
+{{ $nodesPerSuperblock := divf $node_count $superblock_count | ceil }}
+
+{{- range $node_index, $element := until $node_count }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nccl-benchmarks-{{ $.Release.Name }}-{{ $timestamp }}-pod{{ $node_index }}
+  {{- if eq $node_index 0 }}
+  labels:
+    name: nccl-benchmarks-{{ $.Release.Name }}-{{ $timestamp }}
+  {{- end }}
+spec:
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+  hostname: nccl-benchmarks-pod{{ $node_index }}
+  subdomain: nccl-benchmarks-{{ $timestamp }}
+  serviceAccountName: "default"
+  restartPolicy: Never
+  {{- if $.Values.cluster.sbPlacement }}
+  {{ $superblockChunk :=  div $node_index $nodesPerSuperblock | int }}
+  {{ $superblockIndex :=  add $.Values.cluster.startSuperblock $superblockChunk | int }}
+  nodeSelector:
+    superblock: "{{ $superblockIndex }}"
+  {{- end }}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: cloud.google.com/gke-accelerator
+            operator: Exists
+  tolerations:
+  - operator: "Exists"
+    key: nvidia.com/gpu
+  volumes:
+  - name: nvidia-install-dir-host
+    hostPath:
+      path: /home/kubernetes/bin/nvidia
+  - name: shared-memory
+    emptyDir:
+      medium: "Memory"
+      sizeLimit: 200Gi
+  - name: tcpx-nccl-plugin-volume
+    emptyDir: {}
+  - name: workload-terminated-volume
+    emptyDir: {}
+  containers:
+  - name: tcpd-daemon
+    image: us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/tcpgpudmarxd-dev:v1.0.8
+    imagePullPolicy: Always
+    command: ["/bin/sh", "-c"]
+    args:
+      - |
+        set -ex
+        chmod 755 /fts/entrypoint_rxdm_container.sh
+        /fts/entrypoint_rxdm_container.sh --num_hops=2 --num_nics=8 --uid= --alsologtostderr
+    securityContext:
+      privileged: true
+    volumeMounts:
+      - name: nvidia-install-dir-host
+        mountPath: /usr/local/nvidia
+    env:
+      - name: LD_LIBRARY_PATH
+        value: /usr/local/nvidia/lib64
+  - name: nccl-test
+    image: us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/nccl-plugin-gpudirecttcpx-dev:v1.0.2
+    imagePullPolicy: Always
+    command: ["sh", "-c"] # Use sh to execute multiple commands
+    args:
+      - |
+        python -c "print('******* All Reduce Network Benchmark Starts *******')"
+        rm -f /usr/share/all_reduce_benchmarks/workload_terminated
+        python -c "print('Number of nodes participating: 2')"
+        echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
+        echo MASTER_ADDR: $MASTER_ADDR
+        git clone https://github.com/stas00/ml-engineering.git
+        python -u -m torch.distributed.run \
+          --nproc_per_node 8 \
+          --nnodes 2 \
+          --rdzv_endpoint $MASTER_ADDR:6000 \
+          --rdzv_backend c10d \
+          --max_restarts 0 \
+          --role `hostname -s`: \
+          --tee 3 \
+          ml-engineering/network/benchmarks/all_reduce_bench.py
+        python -c "print('******* All Reduce Network Benchmark Completed *******')"
+        while true; do echo 'Running'; sleep 60; done"
+    securityContext:
+      privileged: true
+      capabilities:
+        add:
+          - SYS_ADMIN
+          - SYS_PTRACE
+          - IPC_LOCK
+    env:
+      - name: JOB_TIMESTAMP
+        value: "{{ $timestamp }}"
+      - name: JOB_NAME
+        value: "{{ $.Release.Name }}"
+      - name: MASTER_ADDR
+        value: "nccl-benchmarks-{{ $.Release.Name }}-{{ $timestamp }}"
+      - name: NNODES
+        value: "{{ $node_count }}"
+      - name: NODE_RANK
+        value: "{{ $node_index }}"
+      - name: GCS_BUCKET
+        value: "{{ $.Values.cluster.gcsBucket }}"
+      - name: LD_LIBRARY_PATH
+        value: "/usr/local/nvidia/lib64"
+      - name: BENCHMARKS_CSV
+        value: "{{ $.Values.ncclBenchmarks.benchmarks }}"
+      - name: MASKS_CSV
+        value: "{{ $.Values.ncclBenchmarks.masks }}"
+      - name: MSG_SIZE_BEGIN
+        value: "{{ $.Values.ncclBenchmarks.msgSizeBegin }}"
+      - name: MSG_SIZE_END
+        value: "{{ $.Values.ncclBenchmarks.msgSizeEnd }}"
+      - name: GPUS_PER_NODE
+        value: "{{ $.Values.ncclBenchmarks.gpusPerNode }}"
+      - name: WARMUP_ITERS
+        value: "{{ $.Values.ncclBenchmarks.warmupIters }}"
+      - name: RUN_ITERS
+        value: "{{ $.Values.ncclBenchmarks.runIters }}"
+      - name: N_RUNS
+        value: "{{ $.Values.ncclBenchmarks.nRuns }}"
+      - name: UNRESERVED_CORES
+        value: "{{ $.Values.ncclPlugin.unreservedCores }}"
+      - name: GPU_TELEMETRY
+        value: "{{ $.Values.telemetry.gpu }}"
+      - name: NCCL_LIB_DIR
+        value: "/usr/local/nvidia/lib64"
+      - name: NCCL_FASTRAK_IFNAME
+        value: "eth1,eth2,eth3,eth4,eth5,eth6,eth7,eth8"
+      - name: NCCL_FASTRAK_CTRL_DEV
+        value: "eth0"
+      - name: NCCL_SOCKET_IFNAME
+        value: "eth0"
+      - name: NCCL_CROSS_NIC
+        value: "0"
+      - name: NCCL_ALGO
+        value: "Ring,Tree"
+      - name: NCCL_PROTO
+        value: "Simple"
+      - name: NCCL_MIN_NCHANNELS
+        value: "4"
+      - name: NCCL_P2P_NET_CHUNKSIZE
+        value: "524288"
+      - name: NCCL_P2P_PCI_CHUNKSIZE
+        value: "524288"
+      - name: NCCL_P2P_NVL_CHUNKSIZE
+        value: "1048576"
+      - name: NCCL_FASTRAK_NUM_FLOWS
+        value: "2"
+      - name: NCCL_FASTRAK_ENABLE_CONTROL_CHANNEL
+        value: "0"
+      - name: NCCL_BUFFSIZE
+        value: "8388608"
+      - name: NCCL_FASTRAK_USE_SNAP
+        value: "1"
+      - name: NCCL_FASTRAK_USE_LLCM
+        value: "1"
+      - name: CUDA_VISIBLE_DEVICES
+        value: "0,1,2,3,4,5,6,7"
+      - name: NCCL_NET_GDR_LEVEL
+        value: "PIX"
+      - name: NCCL_FASTRAK_ENABLE_HOTPATH_LOGGING
+        value: "0"
+      - name: NCCL_TUNER_PLUGIN
+        value: "libnccl-tuner.so"
+      - name: NCCL_TUNER_CONFIG_PATH
+        value: "${NCCL_LIB_DIR}/a3plus_tuner_config.textproto"
+      - name: NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE
+        value: "${NCCL_LIB_DIR}/a3plus_guest_config.textproto"
+      - name: NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
+        value: "600000"
+      - name: NCCL_NVLS_ENABLE
+        value: "0"
+      {{- range $key, $value := $.Values.ncclPlugin.envs }}
+      - name: "{{ $key }}"
+        value: "{{ $value }}"
+      {{- end }}
+      {{- if $.Values.telemetry.gpu }}
+      - name: NCCL_PROXY_NVTX_ENABLE
+        value: "1"
+      {{- end }}
+    volumeMounts:
+      - name: nvidia-install-dir-host
+        mountPath: /usr/local/nvidia
+      - name: shared-memory
+        mountPath: /dev/shm
+    resources:
+      limits:
+        nvidia.com/gpu: 8
+---
+{{- end }}
