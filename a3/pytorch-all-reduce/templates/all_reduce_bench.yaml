@@ -127,7 +127,7 @@ spec:
           --tee 3 \
           ml-engineering/network/benchmarks/all_reduce_bench.py
         python -c "print('******* All Reduce Network Benchmark Completed *******')"
-        while true; do echo 'Running'; sleep 60; done
+        while true; do echo 'Running'; sleep 600; done
     securityContext:
       privileged: true
       capabilities:
