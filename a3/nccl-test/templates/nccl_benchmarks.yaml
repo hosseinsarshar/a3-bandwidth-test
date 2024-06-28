@@ -1,5 +1,5 @@
 # yamllint disable
-# {{- $requiredVar := .Values.cluster.nNodes | required ".Values.cluster.nNodes is required, add --set cluster.nNodes=2" -}}
+{{- $requiredVar := .Values.cluster.nNodes | required ".Values.cluster.nNodes is required, add --set cluster.nNodes=2" -}}
 
 {{ $timestamp := now | date "2006-01-02-150405" }}
 
@@ -63,7 +63,7 @@ spec:
     emptyDir: {}
   - name: workload-terminated-volume
     emptyDir: {}
-  initContainers: # safe better to include it to all new jobs
+  initContainers:
   - name: tcpx-nccl-plugin-installer
     image: {{ $.Values.ncclPlugin.image }}:{{ $.Values.ncclPlugin.tag }}
     imagePullPolicy: Always
@@ -90,7 +90,7 @@ spec:
     - "-c"
     - |
       /tcpgpudmarxd/build/app/tcpgpudmarxd {{- range $.Values.rxdm.flags }} {{.}} {{- end }} &
-      while [ ! -e "/usr/share/all_reduce_benchmarks/workload_terminated" ]; do sleep 10; done
+      while [ ! -e "/usr/share/nccl_benchmarks/workload_terminated" ]; do sleep 10; done
       pkill -e "^"tcpgpudmarxd || true
       sleep 30
     securityContext:
@@ -101,32 +101,13 @@ spec:
     - name: tcpd-socket
       mountPath: /tmp
     - name: workload-terminated-volume
-      mountPath: /usr/share/all_reduce_benchmarks
+      mountPath: /usr/share/nccl_benchmarks
     env:
     - name: LD_LIBRARY_PATH
       value: /usr/local/nvidia/lib64
-  - name: all-reduce-test
+  - name: nccl-benchmarks
     image: {{ $.Values.ncclBenchmarks.image }}:{{ $.Values.ncclBenchmarks.tag }}
     imagePullPolicy: Always
-    command: ["sh", "-c"] # Use sh to execute multiple commands
-    args: 
-      - |
-        python -c "print('******* All Reduce Network Benchmark Starts *******')"
-        rm -f /usr/share/all_reduce_benchmarks/workload_terminated
-        python -c "print('Number of nodes participating: {{ $node_count }}')"
-        echo Master address: $MASTER_ADDR
-        git clone https://github.com/stas00/ml-engineering.git
-        python -u -m torch.distributed.run \
-          --nproc_per_node 8 \
-          --nnodes {{ $node_count }} \
-          --rdzv_endpoint $MASTER_ADDR:6000 \
-          --rdzv_backend c10d \
-          --max_restarts 0 \
-          --role `hostname -s`: \
-          --tee 3 \
-          ml-engineering/network/benchmarks/all_reduce_bench.py
-        python -c "print('******* All Reduce Network Benchmark Completed *******')"
-        while true; do echo 'Running'; sleep 60; done"
     securityContext:
       privileged: true
       capabilities:

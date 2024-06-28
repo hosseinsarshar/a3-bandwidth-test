@@ -6,8 +6,8 @@ cluster:
   gcsBucket: null
 
 ncclBenchmarks:
-  image: "classicboyir/dbrx_llm"
-  tag: "11"
+  image: "us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpx/nccl-benchmark"
+  tag: "latest"
   # A comma-separated list of benchmarks to run.
   benchmarks: "all_gather_perf,all_reduce_perf,sendrecv_perf"
   # A comma-separated list of hex masks for the benchmarks.
@@ -47,8 +47,6 @@ ncclPlugin:
       "eth1:22-35,126-139;eth2:22-35,126-139;eth3:74-87,178-191;eth4:74-87,178-191"
     NCCL_NSOCKS_PERTHREAD: 4
     NCCL_SOCKET_NTHREADS: 1
-    NCCL_MAX_NCHANNELS: 12
-    NCCL_MIN_NCHANNELS: 12
     NCCL_GPUDIRECTTCPX_SOCKET_IFNAME: "eth1,eth2,eth3,eth4"
     NCCL_GPUDIRECTTCPX_CTRL_DEV: "eth0"
     NCCL_GPUDIRECTTCPX_PROGRAM_FLOW_STEERING_WAIT_MICROS: "1000000"
@@ -57,4 +55,3 @@ ncclPlugin:
     NCCL_PROTO: "Simple"
     NCCL_NET_GDR_LEVEL: "PIX"
     NCCL_P2P_PXN_LEVEL: 0
-    # NCCL_DEBUG: WARN
