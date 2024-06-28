@@ -1,6 +1,6 @@
 # All reduce network bandwidth test on A3 GKE Cluster
 
-This project helps to run All Reduce network benchmark on A3 GKE clusters with 800 Gbps bandwidth. The [a3-cluster.sh](a3-cluster.sh) provide the steps needed to create and configure the GKE cluster in addition to 
+This project helps to run All Reduce network benchmark on A3 GKE clusters with 800 Gbps bandwidth. The [a3-cluster.sh](a3/a3-cluster.sh) provide the steps needed to create and configure the GKE cluster in addition to 
 
 Deploy the helm package
 ```bash
@@ -14,17 +14,26 @@ kubectl get pods | grep "${USER}-nccl-bm.*pod0"
 
 Get the logs
 ```bash
-kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-06-04-184528-pod0 -c all-reduce-test
+kubectl logs --follow <replace-with-the-pod0> -c nccl-benchmarks
+```
+
+Get the logs
+```bash
+kubectl logs --follow <replace-with-the-pod0> -c all-reduce-test
+```
+
+Get the logs
+```bash
+kubectl logs --follow <replace-with-the-pod0> -c tcpd-daemon
 ```
 
 Login to a pod
 ```bash
-kubectl exec -it  nccl-benchmarks-hosseins-nccl-bm-2024-05-14-121339-pod0 -c all-reduce-test
+kubectl exec -it  <replace-with-the-pod0>  -c all-reduce-test  -- /bin/bash
 ```
 
-kubectl describe pod nccl-benchmarks-hosseins-nccl-bm-2024-05-14-121339-pod0
 
-You should get the following log:
+You should get the following log on A3-High:
 
 ```bash
 ******* All Reduce Network Benchmark Starts *******
@@ -47,13 +56,3 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 ******* All Reduce Network Benchmark Completes *******
 ```
 
-## Dist. Pytorch All-reduce
-
-$ 1
-$ 2
-$ 3
-$ 4
-$ 5
-$ The average bandwidth of all_reduce with a 4.0GB payload (5 trials, 16 ranks):
-$  algbw: 180.721 GBps (1445.8 Gbps)
-$  busbw: 338.852 GBps (2710.8 Gbps)

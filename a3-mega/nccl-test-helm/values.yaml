@@ -1,0 +1,16 @@
+replicaCount: 3
+
+image:
+  tcpxoDaemon: us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/tcpgpudmarxd-dev:v1.0.8
+  ncclTest: us-docker.pkg.dev/gce-ai-infra/gpudirect-tcpxo/nccl-plugin-gpudirecttcpx-dev:v1.0.2
+
+resources:
+  limits:
+    nvidia.com/gpu: 8
+
+volumes:
+  nvidiaInstallDirHost:
+    path: /home/kubernetes/bin/nvidia
+  sharedMemory:
+    medium: "Memory"
+    sizeLimit: "1Gi"

@@ -73,8 +73,14 @@ kubectl exec --stdin --tty --container=nccl-test nccl-test-host-1 -- /scripts/al
 kubectl exec -it --tty --container=nccl-test nccl-test-host-1 -- /bin/bash
 
 kubectl apply -f /Users/hosseins/projects/a3-bandwidth-test/kubectl/nccl-test.yaml
+kubectl apply -f /Users/hosseins/projects/a3-bandwidth-test/kubectl/all-reduce-reve-ai.yaml
+
+kubectl get pods
 kubectl logs --follow nccl-test-host-1 -c nccl-test
 kubectl logs --follow nccl-test-host-2 -c nccl-test
+
+kubectl logs --follow robv-test-pytorch-from-pip
+kubectl describe pod robv-test-pytorch-from-pip
 
 
 #                                                              out-of-place                       in-place          
@@ -125,7 +131,26 @@ kubectl get pods | grep "${USER}-nccl-bm.*pod0"
 
 Get the logs
 ```bash
-kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-06-04-193259-pod0 -c nccl-test
+kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-06-12-114138-pod0 -c tcpd-daemon
 ```
+
+helm install determined-helm .
+helm uninstall determined-helm
+
+kubectl create namespace determinedai
+
+helm install stagingdetai /Users/hosseins/projects/determined -n determinedai
+kubectl get pod,services -n determinedai
+
+helm uninstall stagingdetai -n determinedai
+
+kubectl describe pod determined-db-deployment-stagingdetai-54bf6db99c-pdjzv
+kubectl describe pod determined-master-deployment-stagingdetai-59bdd85874-rqltd
+
+kubectl label nodes gke-a3-mega-tcpxo-a3plus-multi-nic-b046cb18-7q1n accelerator=nvidia-h100-mega-80gb
+kubectl label nodes gke-a3-mega-tcpxo-a3plus-multi-nic-b046cb18-kp98 accelerator=nvidia-h100-mega-80gb
+
+gcloud beta container node-pools delete ${NODE_POOL_NAME} --region ${REGION} --cluster ${CLUSTER_NAME} --project ${PROJECT}
+
 
 
