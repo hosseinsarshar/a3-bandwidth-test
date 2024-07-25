@@ -1,5 +1,5 @@
 {
-  "displayName": "hossein_a3_mega_all_reduce_hub",
+  "displayName": "hossein_a3_mega_all_reduce_torch_run",
   "jobSpec": {
     "workerPoolSpecs": [
       {   
@@ -14,7 +14,7 @@
             "bootDiskSizeGb": 100
         },
         "containerSpec": {
-          "imageUri": "classicboyir/vertex-a3:01",
+          "imageUri": "us-east5-docker.pkg.dev/google.com/vertex-training-dlexamples/hosseins-a3-mega-training-repository/all-reduce-pytorch-24-05:v7",
           "command": [
               "sh", "-c"
           ],
@@ -41,7 +41,7 @@
             "bootDiskSizeGb": 100
         },
         "containerSpec": {
-          "imageUri": "classicboyir/vertex-a3:01",
+          "imageUri": "us-east5-docker.pkg.dev/google.com/vertex-training-dlexamples/hosseins-a3-mega-training-repository/all-reduce-pytorch-24-05:v7",
           "command": [
               "sh", "-c"
           ],

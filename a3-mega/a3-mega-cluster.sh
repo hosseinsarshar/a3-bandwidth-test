@@ -13,6 +13,7 @@ export PREFIX="asia"
 export REGION="asia-northeast1"
 export MTU=8244
 export PROJECT=northam-ce-mlai-tpu
+export PROJECT_ID=northam-ce-mlai-tpu
 
 export GKE_VERSION=1.29.6-gke.1326000
 export CLUSTER_NAME="a3-mega-asia"
@@ -100,7 +101,7 @@ kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container
 
 kubectl get pods -n=kube-system -l=name=nccl-tcpxo-installer
 
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/gpudirect-tcpxo/nccl-tcpxo-installer.yaml
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nri_device_injector/nri-device-injector.yaml
 
 kubectl get pods -n=kube-system -l=name=device-injector
 
@@ -111,7 +112,7 @@ kubectl exec --stdin --tty --container=nccl-test nccl-test-host-1 -- /scripts/al
 kubectl exec -it --tty --container=nccl-test nccl-test-host-1 -- /bin/bash
 
 kubectl apply -f /Users/hosseins/projects/a3-bandwidth-test/kubectl/nccl-test.yaml
-kubectl apply -f /Users/hosseins/projects/a3-bandwidth-test/kubectl/all-reduce-reve-ai.yaml
+kubectl apply -f /Users/hosseins/projects/a3-bandwidth-test/kubectl/all-reduce.yaml
 
 kubectl get pods
 kubectl logs --follow nccl-test-host-1 -c nccl-test
@@ -120,6 +121,10 @@ kubectl logs --follow nccl-test-host-2 -c nccl-test
 kubectl logs --follow robv-test-pytorch-from-pip
 kubectl describe pod robv-test-pytorch-from-pip
 
+
+
+###
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/gpudirect-tcpxo/nccl-test-latest.yaml
 
 #                                                              out-of-place                       in-place          
 #       size         count      type   redop    root     time   algbw   busbw #wrong     time   algbw   busbw #wrong

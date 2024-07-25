@@ -26,16 +26,26 @@ export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
 export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
+# export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
+# export TORCH_DISTRIBUTED_DEBUG=DETAIL
+
 python -c "print('Number of nodes participating: 2')"
 echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
 echo MASTER_ADDR: $MASTER_ADDR
-git clone https://github.com/stas00/ml-engineering.git
-python -u -m torch.distributed.run \
-    --nproc_per_node 8 \
-    --nnodes 2 \
-    --rdzv_endpoint $MASTER_ADDR:6000 \
-    --rdzv_backend c10d \
-    --max_restarts 0 \
-    --role `hostname -s`: \
-    --tee 3 \
-    ml-engineering/network/benchmarks/all_reduce_bench.py
+echo MASTER_PORT: $MASTER_PORT
+
+# python -c "import os; [print('{0}: {1}'.format(name, value)) for name, value in os.environ.items()]" # this is to pring all the environment variables
+
+git clone https://github.com/hosseinsarshar/ml-engineering.git ml-eng
+
+torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT ml-eng/network/benchmarks/all_reduce_bench.py 
+
+# python -u -m torch.distributed.run \
+#     --nproc_per_node 8 \
+#     --nnodes 2 \
+#     --rdzv_endpoint $MASTER_ADDR:$MASTER_PORT \
+#     --rdzv_backend c10d \
+#     --max_restarts 0 \
+#     --role `hostname -s`: \
+#     --tee 3 \
+#     ml-eng/network/benchmarks/all_reduce_bench.py
