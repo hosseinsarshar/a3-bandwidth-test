@@ -2,6 +2,7 @@
 
 You can either use the built image in the `dockerhub` or build your version using the `Dockerfile` provided in this folder. The image contains the `main.sh` bash script which kicks off a `torch.distributed.run` across all the pods.
 
+All the environment variables needed for the `TCPXO` communication is provided in the `main.sh` script.
 
 ```
 git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git
