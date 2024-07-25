@@ -1,5 +1,8 @@
 # How to reproduce it 
 
+You can either use the built image in the `dockerhub` or build your version using the `Dockerfile` provided in this folder. The image contains the `main.sh` bash script which kicks off a `torch.distributed.run` across all the pods.
+
+
 ```
 git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git
 cd a3-bandwidth-test
