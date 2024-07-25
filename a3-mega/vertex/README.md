@@ -1,9 +1,16 @@
-# How to reproduce it in GKE
+# How to reproduce it 
+
+```
+git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git
+cd a3-bandwidth-test
+```
+
+## in GKE
 
 Run the follwing command to create the pod
 
 ```
-kubectl apply -f /Users/hosseins/projects/a3-bandwidth-test/a3-mega/vertex/vertex-test.yaml
+kubectl apply -f a3-mega/vertex/vertex-test.yaml
 ```
 
 To view the logs:
@@ -41,4 +48,15 @@ Setting OMP_NUM_THREADS environment variable for each process to be 1 in default
 [gke-a3-mega-asia-a3-mega-asia-node-po-c2a38dbc-fbc1:0]: algbw: 176.590 GBps (1412.7 Gbps)
 [gke-a3-mega-asia-a3-mega-asia-node-po-c2a38dbc-fbc1:0]: busbw: 331.106 GBps (2648.8 Gbps)
 [gke-a3-mega-asia-a3-mega-asia-node-po-c2a38dbc-fbc1:0]:
+```
+
+## in Vertex
+
+```
+cd a3-mega/vertex/
+curl -X POST \
+     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+     -H "Content-Type: application/json; charset=utf-8" \
+     -d @vertex-payload.json \
+     "https://us-east5-aiplatform.googleapis.com/v1/projects/google.com:vertex-training-dlexamples/locations/us-east5/customJobs"
 ```
