@@ -84,7 +84,7 @@ metadata:
     name: nccl-host-2
 spec:
   hostname: host2
-  subdomain: `
+  subdomain: nccl-host-2
   hostNetwork: true
   dnsPolicy: ClusterFirstWithHostNet
   containers:
