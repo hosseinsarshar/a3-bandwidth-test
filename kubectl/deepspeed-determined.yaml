@@ -86,7 +86,7 @@ spec:
           python -u -m torch.distributed.run \
             --nproc_per_node 8 \
             --nnodes 2 \
-            --rdzv_endpoint nccl-host-1:6000 \
+            --rdzv_endpoint $MASTER_ADDR:6000 \
             --rdzv_backend c10d \
             --max_restarts 0 \
             --role `hostname -s`: \
@@ -97,6 +97,8 @@ spec:
       env:
         - name: LD_LIBRARY_PATH
           value: /usr/local/nvidia/lib64
+        - name: MASTER_ADDR
+          value: nccl-host-1
       securityContext:
         privileged: true
       volumeMounts:
@@ -185,7 +187,7 @@ spec:
           python -u -m torch.distributed.run \
             --nproc_per_node 8 \
             --nnodes 2 \
-            --rdzv_endpoint nccl-host-1:6000 \
+            --rdzv_endpoint $MASTER_ADDR:6000 \
             --rdzv_backend c10d \
             --max_restarts 0 \
             --role `hostname -s`: \
@@ -196,6 +198,8 @@ spec:
       env:
         - name: LD_LIBRARY_PATH
           value: /usr/local/nvidia/lib64
+        - name: MASTER_ADDR
+          value: nccl-host-1
       securityContext:
         privileged: true
       volumeMounts:

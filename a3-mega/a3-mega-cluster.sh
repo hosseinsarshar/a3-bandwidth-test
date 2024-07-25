@@ -1,26 +1,49 @@
 # Link to the setup: 
 #        https://cloud.google.com/kubernetes-engine/docs/how-to/gpu-bandwidth-gpudirect-tcpx#create-gke-environment
 
-ZONE=europe-west4-c
-REGION=europe-west4
+ZONE=asia-northeast1-b
+REGION=asia-northeast1
 LOCATION=$REGION
-POD_IP_ADDRESS_RANGE=10.64.0.0/19
-SERVICE_IP_ADDRESS_RANGE=10.65.0.0/19
+POD_IP_ADDRESS_RANGE=10.70.0.0/19
+SERVICE_IP_ADDRESS_RANGE=10.71.0.0/19
 SOURCE_RANGE=192.168.0.0/16
 
 
-export PREFIX="tcpxo"
-export REGION="europe-west4"
+export PREFIX="asia"
+export REGION="asia-northeast1"
 export MTU=8244
 export PROJECT=northam-ce-mlai-tpu
 
-export GKE_VERSION=1.29.4-gke.1670000
-export CLUSTER_NAME="a3-mega-tcpxo"
+export GKE_VERSION=1.29.6-gke.1326000
+export CLUSTER_NAME="a3-mega-asia"
 
 NODE_POOL_NAME=$CLUSTER_NAME-node-pool
 
+export MACHINE_TYPE="a3-megagpu-8g" 
+export NODE_COUNT=2
+export ACCELERATOR_ARG="type=nvidia-h100-mega-80gb,count=8,gpu-driver-version=latest"
 
-for N in $(seq 8 8); do
+
+# for N in $(seq 1 8); do
+#   SUBNET_RANGE=192.168.$N.0/24
+#   echo $SUBNET_RANGE
+# 
+#   gcloud compute --project=${PROJECT} \
+#     firewall-rules delete \
+#     ${PREFIX?}-internal-$N
+# 
+#   gcloud compute --project=${PROJECT} \
+#     networks subnets delete \
+#     ${PREFIX?}-sub-$N
+# 
+#   gcloud compute --project=${PROJECT} \
+#     networks delete \
+#     ${PREFIX?}-net-$N
+#   
+# done
+
+
+for N in $(seq 1 8); do
   SUBNET_RANGE=192.168.$N.0/24
   echo $SUBNET_RANGE
 
@@ -55,16 +78,31 @@ gcloud --project ${PROJECT} beta container clusters create ${CLUSTER_NAME} \
      --cluster-version ${GKE_VERSION} --no-enable-autoupgrade
 
 
-export NODE_POOL_NAME="a3plus-multi-nic"
-export MACHINE_TYPE="a3-megagpu-8g" 
-export NODE_COUNT=2
-export ACCELERATOR_ARG="type=nvidia-h100-mega-80gb,count=8,gpu-driver-version=latest"
+gcloud beta container node-pools create ${NODE_POOL_NAME} --region ${REGION} \
+  --node-locations ${ZONE} --cluster ${CLUSTER_NAME} --project ${PROJECT} \
+  --no-enable-autoupgrade --accelerator ${ACCELERATOR_ARG} --machine-type ${MACHINE_TYPE} \
+  --num-nodes ${NODE_COUNT} \
+  --additional-node-network network=${PREFIX}-net-1,subnetwork=${PREFIX}-sub-1 \
+  --additional-node-network network=${PREFIX}-net-2,subnetwork=${PREFIX}-sub-2 \
+  --additional-node-network network=${PREFIX}-net-3,subnetwork=${PREFIX}-sub-3 \
+  --additional-node-network network=${PREFIX}-net-4,subnetwork=${PREFIX}-sub-4 \
+  --additional-node-network network=${PREFIX}-net-5,subnetwork=${PREFIX}-sub-5 \
+  --additional-node-network network=${PREFIX}-net-6,subnetwork=${PREFIX}-sub-6 \
+  --additional-node-network network=${PREFIX}-net-7,subnetwork=${PREFIX}-sub-7 \
+  --additional-node-network network=${PREFIX}-net-8,subnetwork=${PREFIX}-sub-8 \
+  --enable-gvnic --scopes "https://www.googleapis.com/auth/cloud-platform" \
+  --reservation-affinity=specific --reservation=a3mega-slurm
 
-gcloud beta container node-pools create ${NODE_POOL_NAME} --region ${REGION} --node-locations ${ZONE} --cluster ${CLUSTER_NAME} --project ${PROJECT} --no-enable-autoupgrade --accelerator ${ACCELERATOR_ARG} --machine-type ${MACHINE_TYPE} --num-nodes ${NODE_COUNT} --additional-node-network network=${PREFIX}-net-1,subnetwork=${PREFIX}-sub-1 --additional-node-network network=${PREFIX}-net-2,subnetwork=${PREFIX}-sub-2 --additional-node-network network=${PREFIX}-net-3,subnetwork=${PREFIX}-sub-3 --additional-node-network network=${PREFIX}-net-4,subnetwork=${PREFIX}-sub-4 --additional-node-network network=${PREFIX}-net-5,subnetwork=${PREFIX}-sub-5 --additional-node-network network=${PREFIX}-net-6,subnetwork=${PREFIX}-sub-6 --additional-node-network network=${PREFIX}-net-7,subnetwork=${PREFIX}-sub-7 --additional-node-network network=${PREFIX}-net-8,subnetwork=${PREFIX}-sub-8 --enable-gvnic --scopes "https://www.googleapis.com/auth/cloud-platform"
 
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/cos/daemonset-preloaded-latest.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/gpudirect-tcpxo/nccl-tcpxo-installer.yaml
+
+kubectl get pods -n=kube-system -l=name=nccl-tcpxo-installer
+
+kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/gpudirect-tcpxo/nccl-tcpxo-installer.yaml
+
+kubectl get pods -n=kube-system -l=name=device-injector
 
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/gpudirect-tcpxo/nccl-test.yaml
 

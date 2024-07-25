@@ -19,7 +19,7 @@ kubectl logs --follow <replace-with-the-pod0> -c nccl-benchmarks
 
 Get the logs
 ```bash
-kubectl logs --follow <replace-with-the-pod0> -c all-reduce-test
+kubectl logs --follow nccl-benchmarks-hosseins-nccl-bm-2024-07-19-103659-pod0 -c all-reduce-test
 ```
 
 Get the logs
@@ -29,9 +29,10 @@ kubectl logs --follow <replace-with-the-pod0> -c tcpd-daemon
 
 Login to a pod
 ```bash
-kubectl exec -it  <replace-with-the-pod0>  -c all-reduce-test  -- /bin/bash
+kubectl exec -it  nccl-benchmarks-hosseins-nccl-bm-2024-07-19-103659-pod0  -c all-reduce-test  -- /bin/bash
 ```
 
+kubectl exec -it  <replace-with-the-pod0>  -c all-reduce-test  -- /bin/bash
 
 You should get the following log on A3-High:
 
