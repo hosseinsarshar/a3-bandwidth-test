@@ -1,0 +1,49 @@
+{
+  "displayName": "hossein_a3_mega_all_reduce_bash",
+  "jobSpec": {
+    "workerPoolSpecs": [
+      {   
+        "machineSpec": {
+          "machineType": "a3-megagpu-8g",
+          "acceleratorType": "NVIDIA_H100_MEGA_80GB",
+          "acceleratorCount": 8
+        },  
+        "replicaCount": "1",
+        "diskSpec": {
+            "bootDiskType": "pd-ssd",
+            "bootDiskSizeGb": 100
+        },
+        "containerSpec": {
+          "imageUri": "classicboyir/vertex-a3:01",
+          "command": [
+              "sh", "-c"
+          ],
+          "args": [
+            "./main.sh"
+          ]
+        }
+      },
+      {
+        "machineSpec": {
+          "machineType": "a3-megagpu-8g",
+          "acceleratorType": "NVIDIA_H100_MEGA_80GB",
+          "acceleratorCount": 8
+        },
+        "replicaCount": "1",
+        "diskSpec": {
+            "bootDiskType": "pd-ssd",
+            "bootDiskSizeGb": 100
+        },
+        "containerSpec": {
+          "imageUri": "classicboyir/vertex-a3:01",
+          "command": [
+              "sh", "-c"
+          ],
+          "args": [
+            "./main.sh"
+          ]
+        }
+      }
+    ]
+  }
+}
