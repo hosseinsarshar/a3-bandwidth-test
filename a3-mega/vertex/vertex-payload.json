@@ -1,5 +1,5 @@
 {
-  "displayName": "hossein_a3_mega_all_reduce_bash",
+  "displayName": "hossein_a3_mega_all_reduce_hub",
   "jobSpec": {
     "workerPoolSpecs": [
       {   
@@ -20,6 +20,12 @@
           ],
           "args": [
             "./main.sh"
+          ],
+          "env": [
+              {
+                "name": "LD_LIBRARY_PATH",
+                "value": "/usr/local/nvidia/lib64"
+              }
           ]
         }
       },
@@ -41,6 +47,12 @@
           ],
           "args": [
             "./main.sh"
+          ],
+          "env": [
+              {
+                "name": "LD_LIBRARY_PATH",
+                "value": "/usr/local/nvidia/lib64"
+              }
           ]
         }
       }
