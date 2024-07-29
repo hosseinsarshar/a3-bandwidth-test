@@ -1,5 +1,5 @@
 {
-    "displayName": "hossein_a3_mega_all_reduce_with_reservation",
+    "displayName": "hossein_nemo_reservation",
     "jobSpec": {
       "workerPoolSpecs": [
         {   
@@ -22,7 +22,7 @@
                 "sh", "-c"
             ],
             "args": [
-                "https://github.com/hosseinsarshar/a3-bandwidth-test.git && ./a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/job.sh"
+                "git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git && chmod +x ./a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/job.sh && ./a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/job.sh"
             ],
             "env": [
                 {
@@ -56,7 +56,7 @@
                 "sh", "-c"
             ],
             "args": [
-                "https://github.com/hosseinsarshar/a3-bandwidth-test.git && ./a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/job.sh"
+              "git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git && chmod +x ./a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/job.sh && ./a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/job.sh"
             ],
             "env": [
                 {

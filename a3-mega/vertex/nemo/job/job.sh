@@ -60,6 +60,8 @@ mkdir -p /gcs/hosseins-vertex-test/$JOB_IDENTIFIER/
 
 apt -y update && apt -y install gdb python3.10-dbg
 
+python -c "import os; print(os.listdir('.'))"
+
 export NODE_RANK=$RANK         
 export GPUS_PER_NODE=8                         
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
@@ -70,7 +72,7 @@ for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
     nsys profile -s none -t nvtx,cuda --capture-range=cudaProfilerApi --capture-range-end=stop \
     -o /gcs/hosseins-vertex-test/$JOB_IDENTIFIER/rank-$RANK \
     --session-new "nemo-rank$RANK" \
-    python NeMo/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
+    python NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
     --config-name="llama2-7b-fp8.yaml" \
     +trainer.num_nodes="$NNODES" \

@@ -62,5 +62,5 @@ curl -X POST \
      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
      -H "Content-Type: application/json; charset=utf-8" \
      -d @vertex-payload.json \
-     "https://us-east5-aiplatform.googleapis.com/v1/projects/google.com:vertex-training-dlexamples/locations/us-east5/customJobs"
+     "https://us-east45-aiplatform.googleapis.com/v1/projects/google.com:vertex-training-dlexamples/locations/us-east4/customJobs"
 ```
