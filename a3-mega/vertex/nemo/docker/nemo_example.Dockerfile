@@ -20,5 +20,9 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
 
 RUN pip install git+https://github.com/NVIDIA/dllogger#egg=dllogger
 
-COPY enable-step-times-2405.patch /opt/NeMo/enable-step-times-2405.patch
-RUN cd /opt/NeMo/ && git apply enable-step-times-2405.patch 
+# COPY enable-step-times-2405.patch /opt/NeMo/enable-step-times-2405.patch
+# RUN cd /opt/NeMo/ && git apply enable-step-times-2405.patch 
+
+RUN git clone https://github.com/hosseinsarshar/NeMo.git NemoHossein
+
+COPY ../nemo-configs/llama2-7b.yaml llama2-7b.yaml
