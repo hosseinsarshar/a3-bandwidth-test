@@ -50,3 +50,36 @@ ENV NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_c
 ENV NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 ENV NCCL_NVLS_ENABLE=0
 
+# Install launch scripts
+ARG LAUNCHER_COMMIT
+RUN git clone https://github.com/NVIDIA/NeMo-Framework-Launcher.git && \
+    cd NeMo-Framework-Launcher && \
+    git pull && \
+    if [ ! -z $LAUNCHER_COMMIT ]; then \
+        git fetch origin $LAUNCHER_COMMIT && \
+        git checkout FETCH_HEAD; \
+    fi && \
+    pip install --no-cache-dir -r requirements.txt
+
+ENV LAUNCHER_SCRIPTS_PATH=/opt/NeMo-Framework-Launcher/launcher_scripts
+ENV PYTHONPATH=/opt/NeMo-Framework-Launcher/launcher_scripts:${PYTHONPATH}
+
+# HF cache
+RUN python -c "from transformers import AutoTokenizer; tok_gpt=AutoTokenizer.from_pretrained('gpt2'); tok_bert=AutoTokenizer.from_pretrained('bert-base-cased'); tok_large_bert=AutoTokenizer.from_pretrained('bert-large-cased'); tok_large_uncased_bert=AutoTokenizer.from_pretrained('bert-large-uncased');"
+
+# Setup SSH config to allow mpi-operator to communicate with containers in k8s
+RUN echo "    UserKnownHostsFile /dev/null" >> /etc/ssh/ssh_config && \
+    sed -i 's/#\(StrictModes \).*/\1no/g' /etc/ssh/sshd_config && \
+    sed -i 's/#   StrictHostKeyChecking ask/    StrictHostKeyChecking no/' /etc/ssh/ssh_config && \
+    mkdir -p /var/run/sshd
+
+# Examples
+WORKDIR /workspace
+#COPY any user-facing example scripts should go in here
+RUN chmod -R a+w /workspace
+
+ARG NVIDIA_BUILD_ID
+ENV NVIDIA_BUILD_ID ${NVIDIA_BUILD_ID:-<unknown>}
+LABEL com.nvidia.build.id="${NVIDIA_BUILD_ID}"
+ARG NVIDIA_BUILD_REF
+LABEL com.nvidia.build.ref="${NVIDIA_BUILD_REF}"

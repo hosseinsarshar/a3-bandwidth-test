@@ -1,30 +1,37 @@
 {
-    "displayName": "hossein_nemo_base",
+    "displayName": "hossein_a3_mega_all_reduce_with_reservation",
     "jobSpec": {
       "workerPoolSpecs": [
         {   
           "machineSpec": {
             "machineType": "a3-megagpu-8g",
             "acceleratorType": "NVIDIA_H100_MEGA_80GB",
-            "acceleratorCount": 8
+            "acceleratorCount": 8,
+            "reservationAffinity": {
+              "reservationAffinityType": "SPECIFIC_RESERVATION",
+              "key": "compute.googleapis.com/reservation-name",
+              "values": [
+                  "projects/disco-sector-292704/zones/us-east4-a/reservations/snap-a3-mega-reservation"
+              ]   
+            }
           },  
           "replicaCount": "1",
-          "diskSpec": {
-              "bootDiskType": "pd-ssd",
-              "bootDiskSizeGb": 100
-          },
           "containerSpec": {
             "imageUri": "classicboyir/nemo:02",
             "command": [
                 "sh", "-c"
             ],
             "args": [
-              "./main.sh"
+                "https://github.com/hosseinsarshar/a3-bandwidth-test.git && ./a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/job.sh"
             ],
             "env": [
                 {
                   "name": "LD_LIBRARY_PATH",
                   "value": "/usr/local/nvidia/lib64"
+                },
+                {
+                  "name": "NODE_COUNT",
+                  "value": "2"
                 }
             ]
           }
@@ -33,25 +40,32 @@
           "machineSpec": {
             "machineType": "a3-megagpu-8g",
             "acceleratorType": "NVIDIA_H100_MEGA_80GB",
-            "acceleratorCount": 8
+            "acceleratorCount": 8,
+            "reservationAffinity": {
+              "reservationAffinityType": "SPECIFIC_RESERVATION",
+              "key": "compute.googleapis.com/reservation-name",
+              "values": [
+                  "projects/disco-sector-292704/zones/us-east4-a/reservations/snap-a3-mega-reservation"
+              ]   
+            }
           },
           "replicaCount": "1",
-          "diskSpec": {
-              "bootDiskType": "pd-ssd",
-              "bootDiskSizeGb": 100
-          },
           "containerSpec": {
             "imageUri": "classicboyir/nemo:02",
             "command": [
                 "sh", "-c"
             ],
             "args": [
-              "./main.sh"
+                "https://github.com/hosseinsarshar/a3-bandwidth-test.git && ./a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/job.sh"
             ],
             "env": [
                 {
                   "name": "LD_LIBRARY_PATH",
                   "value": "/usr/local/nvidia/lib64"
+                },
+                {
+                  "name": "NODE_COUNT",
+                  "value": "2"
                 }
             ]
           }
