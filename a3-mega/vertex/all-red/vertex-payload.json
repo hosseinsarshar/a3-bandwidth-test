@@ -1,20 +1,23 @@
 {
-  "displayName": "hossein_a3_mega_all_reduce_torch_run",
+  "displayName": "hossein_a3_mega_all_reduce_with_reservation",
   "jobSpec": {
     "workerPoolSpecs": [
       {   
         "machineSpec": {
           "machineType": "a3-megagpu-8g",
           "acceleratorType": "NVIDIA_H100_MEGA_80GB",
-          "acceleratorCount": 8
+          "acceleratorCount": 8,
+          "reservationAffinity": {
+            "reservationAffinityType": "SPECIFIC_RESERVATION",
+            "key": "compute.googleapis.com/reservation-name",
+            "values": [
+                "projects/disco-sector-292704/zones/us-east5/reservations/snap-a3-mega-reservation"
+            ]   
+          }
         },  
         "replicaCount": "1",
-        "diskSpec": {
-            "bootDiskType": "pd-ssd",
-            "bootDiskSizeGb": 100
-        },
         "containerSpec": {
-          "imageUri": "us-east5-docker.pkg.dev/google.com/vertex-training-dlexamples/hosseins-a3-mega-training-repository/all-reduce-pytorch-24-05:v7",
+          "imageUri": "us-east5-docker.pkg.dev/google.com/vertex-training-dlexamples/hosseins-a3-mega-training-repository/all-reduce-pytorch-24-05:v9",
           "command": [
               "sh", "-c"
           ],
@@ -25,6 +28,10 @@
               {
                 "name": "LD_LIBRARY_PATH",
                 "value": "/usr/local/nvidia/lib64"
+              },
+              {
+                "name": "NODE_COUNT",
+                "value": "2"
               }
           ]
         }
@@ -33,15 +40,18 @@
         "machineSpec": {
           "machineType": "a3-megagpu-8g",
           "acceleratorType": "NVIDIA_H100_MEGA_80GB",
-          "acceleratorCount": 8
+          "acceleratorCount": 8,
+          "reservationAffinity": {
+            "reservationAffinityType": "SPECIFIC_RESERVATION",
+            "key": "compute.googleapis.com/reservation-name",
+            "values": [
+                "projects/disco-sector-292704/zones/us-east5/reservations/snap-a3-mega-reservation"
+            ]   
+          }
         },
         "replicaCount": "1",
-        "diskSpec": {
-            "bootDiskType": "pd-ssd",
-            "bootDiskSizeGb": 100
-        },
         "containerSpec": {
-          "imageUri": "us-east5-docker.pkg.dev/google.com/vertex-training-dlexamples/hosseins-a3-mega-training-repository/all-reduce-pytorch-24-05:v7",
+          "imageUri": "us-east5-docker.pkg.dev/google.com/vertex-training-dlexamples/hosseins-a3-mega-training-repository/all-reduce-pytorch-24-05:v9",
           "command": [
               "sh", "-c"
           ],
@@ -52,6 +62,10 @@
               {
                 "name": "LD_LIBRARY_PATH",
                 "value": "/usr/local/nvidia/lib64"
+              },
+              {
+                "name": "NODE_COUNT",
+                "value": "2"
               }
           ]
         }
