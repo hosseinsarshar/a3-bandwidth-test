@@ -69,12 +69,12 @@ for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
     RANK=$((8*$NODE_RANK + $LOCAL_RANK))
     
     OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK \
-    nsys profile -s none -t nvtx,cuda --capture-range=cudaProfilerApi --capture-range-end=stop \
-    -o /gcs/hosseins-vertex-test/$JOB_IDENTIFIER/rank-$RANK \
-    --session-new "nemo-rank$RANK" \
+    # nsys profile -s none -t nvtx,cuda --capture-range=cudaProfilerApi --capture-range-end=stop \
+    # -o /gcs/hosseins-vertex-test/$JOB_IDENTIFIER/rank-$RANK \
+    # --session-new "nemo-rank$RANK" \
     python NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
-    --config-name="llama2-7b-fp8.yaml" \
+    --config-name="llama2-7b.yaml" \
     +trainer.num_nodes="$NNODES" \
     +exp_manager.version="$JOB_IDENTIFIER" \
     ${workload_arguments[@]} &
@@ -88,11 +88,11 @@ if [ "$NODE_RANK" -eq "1" ]; then
     nvidia-smi dmon -d 20 -s pum &
 fi
 
-# if [ "$NODE_RANK" -eq "0" ] && { ! [ -z ${EMBEDDED_TENSORBOARD_TARGET} ]; }; then
-#     echo "Launching an embedded Tensorboard against log directory $EMBEDDED_TENSORBOARD_TARGET"
-#     tensorboard --logdir $EMBEDDED_TENSORBOARD_TARGET &
-#     wait # <-- This will indefinitely stall node rank 0
-# fi
+if [ "$NODE_RANK" -eq "0" ] && { ! [ -z ${EMBEDDED_TENSORBOARD_TARGET} ]; }; then
+    echo "Launching an embedded Tensorboard against log directory $EMBEDDED_TENSORBOARD_TARGET"
+    tensorboard --logdir $EMBEDDED_TENSORBOARD_TARGET &
+    wait # <-- This will indefinitely stall node rank 0
+fi
 
 # Wait for Torch processes (might be problematic if only one fails)
 for PID in ${TORCH_PIDS[*]}; do
