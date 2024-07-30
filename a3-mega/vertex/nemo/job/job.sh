@@ -69,9 +69,9 @@ for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
     RANK=$((8*$NODE_RANK + $LOCAL_RANK))
     
     OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK \
-    # nsys profile -s none -t nvtx,cuda --capture-range=cudaProfilerApi --capture-range-end=stop \
-    # -o /gcs/hosseins-vertex-test/$JOB_IDENTIFIER/rank-$RANK \
-    # --session-new "nemo-rank$RANK" \
+    nsys profile -s none -t nvtx,cuda --capture-range=cudaProfilerApi --capture-range-end=stop \
+    -o /gcs/hosseins-vertex-test/$JOB_IDENTIFIER/rank-$RANK \
+    --session-new "nemo-rank$RANK" \
     python NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
     --config-name="llama2-7b.yaml" \
