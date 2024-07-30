@@ -100,4 +100,6 @@ for PID in ${TORCH_PIDS[*]}; do
     wait $PID
 done
 
+sleep
+
 echo "Pod on $(hostname --fqdn) is exiting"
