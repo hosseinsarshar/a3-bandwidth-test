@@ -20,7 +20,7 @@ kubectl apply -f a3-mega/vertex/vertex-test.yaml
 To view the logs:
 
 ```
-kubectl logs --follow nccl-test-host-1 -c nccl-test
+kubectl logs --follow hosseins-nemo-0-6gqxs -c megatron
 ```
 
 You should be seeting this message:
@@ -61,6 +61,6 @@ cd a3-mega/vertex/
 curl -X POST \
      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
      -H "Content-Type: application/json; charset=utf-8" \
-     -d @vertex-payload.json \
+     -d @/Users/hosseins/projects/a3-bandwidth-test/a3-mega/vertex/nemo/job-payload/nemo-small.json \
      "https://us-east45-aiplatform.googleapis.com/v1/projects/google.com:vertex-training-dlexamples/locations/us-east4/customJobs"
 ```

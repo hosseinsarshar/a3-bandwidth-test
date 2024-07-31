@@ -151,8 +151,8 @@ model:
       min_lr: 1.0e-05
     grad_sync_dtype: bf16
   data:
-    # mock_dataset: true 
-    data_impl: mmap                                                             
+    mock_dataset: true 
+    data_impl: mock                                                             
     splits_string: "90,8,2"                                                  
     seq_length: 4096
     skip_warmup: true                                                           
