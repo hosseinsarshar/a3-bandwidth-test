@@ -106,7 +106,6 @@ mkdir -p /tmp/exp/
 mkdir -p /tmp/nemo-experiments/results
 mkdir -p /tmp/index_mapping_dir
 
-export RANK=0
 export NODE_RANK=$RANK         
 export GPUS_PER_NODE=8
 export WORLD_SIZE=8
@@ -118,6 +117,7 @@ echo NODE_RANK:$NODE_RANK
 echo GPUS_PER_NODE:$GPUS_PER_NODE
 echo WORLD_SIZE:$WORLD_SIZE
 echo MASTER_PORT:$MASTER_PORT
+echo NNODES:$NNODES
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do

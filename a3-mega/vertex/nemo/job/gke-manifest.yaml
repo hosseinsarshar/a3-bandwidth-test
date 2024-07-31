@@ -65,7 +65,9 @@ spec:
         - name: MASTER_ADDR
           value: nccl-host-1
         - name: NNODES
-          value: 2
+          value: "2"
+        - name: RANK
+          value: "0"
       securityContext:
         privileged: true
       volumeMounts:
@@ -134,7 +136,9 @@ spec:
         - name: MASTER_ADDR
           value: nccl-host-1
         - name: NNODES
-          value: 2
+          value: "2"
+        - name: RANK
+          value: "1"
       securityContext:
         privileged: true
       volumeMounts:
