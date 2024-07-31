@@ -64,6 +64,8 @@ spec:
           value: /usr/local/nvidia/lib64
         - name: MASTER_ADDR
           value: nccl-host-1
+        - name: NNODES
+          value: 2
       securityContext:
         privileged: true
       volumeMounts:
@@ -131,6 +133,8 @@ spec:
           value: /usr/local/nvidia/lib64
         - name: MASTER_ADDR
           value: nccl-host-1
+        - name: NNODES
+          value: 2
       securityContext:
         privileged: true
       volumeMounts:
