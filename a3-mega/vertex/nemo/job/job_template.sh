@@ -1,5 +1,37 @@
 #!/bin/bash
 
+
+export NCCL_LIB_DIR="/usr/local/nvidia/lib64"
+export NCCL_FASTRAK_IFNAME=eth1,eth2,eth3,eth4,eth5,eth6,eth7,eth8
+export NCCL_FASTRAK_CTRL_DEV=eth0
+export NCCL_SOCKET_IFNAME=eth0
+export NCCL_CROSS_NIC=0
+export NCCL_ALGO=Ring,Tree
+export NCCL_PROTO=Simple
+export NCCL_MIN_NCHANNELS=4
+export NCCL_P2P_NET_CHUNKSIZE=524288
+export NCCL_P2P_PCI_CHUNKSIZE=524288
+export NCCL_P2P_NVL_CHUNKSIZE=1048576
+export NCCL_FASTRAK_NUM_FLOWS=2
+export NCCL_FASTRAK_ENABLE_CONTROL_CHANNEL=0
+export NCCL_BUFFSIZE=8388608
+export NCCL_FASTRAK_USE_SNAP=1
+export NCCL_FASTRAK_USE_LLCM=1
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export NCCL_NET_GDR_LEVEL=PIX
+export NCCL_FASTRAK_ENABLE_HOTPATH_LOGGING=0
+export NCCL_TUNER_PLUGIN=libnccl-tuner.so
+export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
+export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
+export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
+export NCCL_NVLS_ENABLE=0
+python -c "print('Number of nodes participating: 2')"
+echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
+echo MASTER_ADDR: $MASTER_ADDR
+echo LOCAL_RANK: $LOCAL_RANK
+echo JOB_COMPLETION_INDEX: $JOB_COMPLETION_INDEX
+
+
 function on_script_completion {
     # Note: This semaphore is used to terminate the TCPx side-car
     touch /semaphore/workload_terminated
@@ -80,6 +112,8 @@ export GPUS_PER_NODE=8
 export NNODES=1
 export WORLD_SIZE=8
 export MASTER_PORT=2222
+# export MASTER_ADDR=localhost
+
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
     RANK=$((8*$NODE_RANK + $LOCAL_RANK))
@@ -97,25 +131,13 @@ for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
     +model.data.index_mapping_dir="/tmp/index_mapping_dir" \
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp" \
-    > /tmp/logs-2/rank-$RANK.log 2>&1 &
+    > /tmp/logs/rank-$RANK.log 2>&1 &
     # ${workload_arguments[@]} \
 
     echo "Launched rank $RANK with PID $!"
     echo "Logs are available at /tmp/logs/rank-$RANK.log"
     TORCH_PIDS[$LOCAL_RANK]=$!
 done
-
-# ```
-#     format_and_raise(
-#   File "/usr/local/lib/python3.10/dist-packages/omegaconf/_utils.py", line 900, in format_and_raise
-#     _raise(ex, cause)
-#   File "/usr/local/lib/python3.10/dist-packages/omegaconf/_utils.py", line 798, in _raise
-#     raise ex.with_traceback(sys.exc_info()[2])  # set env var OC_CAUSE=1 for full trace
-# omegaconf.errors.ConfigAttributeError: Key 'data_prefix' is not in struct
-#     full_key: data.data_prefix
-#     object_type=dict
-# Generated:
-# ```
 
 if [ "$NODE_RANK" -eq "1" ]; then
     echo "Launching nvidia-smi in daemon mode with (20 sec delay)"

@@ -20,7 +20,7 @@ kubectl apply -f a3-mega/vertex/vertex-test.yaml
 To view the logs:
 
 ```
-kubectl logs --follow hosseins-nemo-0-6gqxs -c megatron
+kubectl logs --follow nccl-test-host-1 -c nccl-test
 ```
 
 You should be seeting this message:
