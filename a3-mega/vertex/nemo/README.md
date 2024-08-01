@@ -11,3 +11,15 @@ You can either fetch the docker file from classicboyir/nemo:01 on dockerhub or b
 ```
 
 ```
+
+How to mount storage:
+
+gcloud container clusters update $CLUSTER_NAME \
+    --location=$LOCATION \
+    --workload-pool=$PROJECT_ID.svc.id.goog
+
+```
+gcloud container clusters update $CLUSTER_NAME \
+    --update-addons GcsFuseCsiDriver=ENABLED \
+    --location=$LOCATION
+```
