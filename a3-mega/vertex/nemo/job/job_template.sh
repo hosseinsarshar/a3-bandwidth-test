@@ -117,7 +117,8 @@ export WORLD_SIZE=8
 export MASTER_PORT=2222
 # export MASTER_ADDR=localhost
 
-sleep 60
+echo "infinity loop"
+sleep infinity
 
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
@@ -125,6 +126,7 @@ echo GPUS_PER_NODE:$GPUS_PER_NODE
 echo WORLD_SIZE:$WORLD_SIZE
 echo MASTER_PORT:$MASTER_PORT
 echo NNODES:$NNODES
+echo rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT
 # torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
@@ -133,7 +135,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
     --rdzv_backend c10d \
     --rdzv_id $CLOUD_ML_JOB_ID \
-    --rdzv_endpoint=${MASTER_ADDR}:${MASTER_PORT} \
+    --rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT \
     NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
     --config-name="llama2-7b" \
