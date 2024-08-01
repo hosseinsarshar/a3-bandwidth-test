@@ -132,7 +132,6 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
     --rdzv_backend c10d \
     --rdzv_id $CLOUD_ML_JOB_ID \
-    --node_rank ${NODE_RANK} \
     --master_addr ${MASTER_ADDR} \
     --master_port ${MASTER_PORT} \
     NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
