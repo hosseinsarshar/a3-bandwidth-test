@@ -117,6 +117,8 @@ export WORLD_SIZE=8
 export MASTER_PORT=2222
 # export MASTER_ADDR=localhost
 
+sleep 60
+
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
 echo GPUS_PER_NODE:$GPUS_PER_NODE
@@ -126,8 +128,7 @@ echo NNODES:$NNODES
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
-torchrun 
-    --nproc_per_node=${GPUS_PER_NODE} \
+torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
     --rdzv_backend c10d \
     --rdzv_id $CLOUD_ML_JOB_ID \
