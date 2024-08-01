@@ -71,6 +71,8 @@ mkdir -p $SSD_MOUNT_PATH
 touch $SSD_MOUNT_PATH/hello-from-$HOSTNAME.txt
 echo "Local SSD contents (path $SSD_MOUNT_PATH):"; ls $SSD_MOUNT_PATH | sed 's/^/  /'
 
+
+
 echo "Downloading GPT vocabulary files"
 wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-vocab.json &&\
 wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
@@ -135,8 +137,8 @@ for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
     +model.data.index_mapping_dir="/tmp/index_mapping_dir" \
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp" \
+    +model.data.data_prefix="[1.0,gs://northam-ce-mlai-tpu/wikipedia/hfbpe_gpt_training_data_text_document]" \
     > /tmp/logs/rank-$RANK.log 2>&1 &
-    # +model.data.data_prefix="[1.0,/ssd/.cache/wikipedia-tokenized-for-llama2]" \
     # ${workload_arguments[@]} \
 
     echo "Launched rank $RANK with PID $!"

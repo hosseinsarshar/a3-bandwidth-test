@@ -21,6 +21,14 @@ To view the logs:
 
 ```
 kubectl logs --follow nccl-test-host-1 -c nccl-test
+kubectl logs --follow nccl-test-host-2 -c nccl-test
+```
+
+To view the ssh to the nodes:
+
+```
+kubectl exec -it nccl-test-host-1  -c nccl-test -- /bin/bash
+kubectl exec -it nccl-test-host-2  -c nccl-test -- /bin/bash
 ```
 
 You should be seeting this message:
