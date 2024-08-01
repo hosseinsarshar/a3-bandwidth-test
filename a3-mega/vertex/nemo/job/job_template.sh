@@ -117,8 +117,8 @@ export WORLD_SIZE=8
 export MASTER_PORT=2222
 # export MASTER_ADDR=localhost
 
-echo "infinity loop"
-sleep infinity
+echo "sleep for 60 seconds"
+sleep 60
 
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
@@ -130,7 +130,9 @@ echo rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo loca
 # torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
-OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
+# OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
+
+OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
     --rdzv_backend c10d \
