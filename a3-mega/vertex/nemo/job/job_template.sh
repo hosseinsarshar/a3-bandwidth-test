@@ -186,13 +186,13 @@ if [ "$NODE_RANK" -eq "0" ] && { ! [ -z ${EMBEDDED_TENSORBOARD_TARGET} ]; }; the
     wait # <-- This will indefinitely stall node rank 0
 fi
 
-# Wait for Torch processes (might be problematic if only one fails)
-for PID in ${TORCH_PIDS[*]}; do
-    echo "Waiting on Torch PID $PID"
-    wait $PID
-done
-
-sleep 600
+# # Wait for Torch processes (might be problematic if only one fails)
+# for PID in ${TORCH_PIDS[*]}; do
+#     echo "Waiting on Torch PID $PID"
+#     wait $PID
+# done
+# 
+# sleep 600
 
 echo "Pod on $(hostname --fqdn) is exiting"
 
