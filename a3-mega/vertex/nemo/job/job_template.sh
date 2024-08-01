@@ -125,14 +125,16 @@ echo MASTER_PORT:$MASTER_PORT
 echo NNODES:$NNODES
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
-for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
-    RANK=$((8*$NODE_RANK + $LOCAL_RANK))
-    
-    OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
-    nsys profile -s none -t nvtx,cuda --capture-range=cudaProfilerApi --capture-range-end=stop \
-    -o /tmp/hosseins-vertex-test/$JOB_IDENTIFIER/rank-$RANK \
-    --session-new "nemo-rank$RANK" \
-    python NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
+OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
+torchrun 
+    --nproc_per_node=${GPUS_PER_NODE} \
+    --nnodes=${NNODES} \
+    --rdzv_backend c10d \
+    --rdzv_id $CLOUD_ML_JOB_ID \
+    --node_rank ${NODE_RANK} \
+    --master_addr ${MASTER_ADDR} \
+    --master_port ${MASTER_PORT} \
+    NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
     --config-name="llama2-7b" \
     +trainer.num_nodes="$NNODES" \
@@ -140,14 +142,37 @@ for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp" \
     +model.data.data_prefix="[1.0,gs://northam-ce-mlai-tpu/wikipedia/hfbpe_gpt_training_data_text_document]" \
-    > /tmp/logs/rank-$RANK.log 2>&1 &
+    > /tmp/logs/rank-$NODE_RANK.log 2>&1 &
     # +model.data.index_mapping_dir="/tmp/index_mapping_dir" \
     # ${workload_arguments[@]} \
 
-    echo "Launched rank $RANK with PID $!"
-    echo "Logs are available at /tmp/logs/rank-$RANK.log"
-    TORCH_PIDS[$LOCAL_RANK]=$!
-done
+echo "Launched rank $NODE_RANK with PID $!"
+echo "Logs are available at /tmp/logs/rank-$NODE_RANK.log"
+TORCH_PIDS[$LOCAL_RANK]=$!
+
+# for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
+#     RANK=$((8*$NODE_RANK + $LOCAL_RANK))
+#     
+#     OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
+#     nsys profile -s none -t nvtx,cuda --capture-range=cudaProfilerApi --capture-range-end=stop \
+#     -o /tmp/hosseins-vertex-test/$JOB_IDENTIFIER/rank-$RANK \
+#     --session-new "nemo-rank$RANK" \
+#     python NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
+#     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
+#     --config-name="llama2-7b" \
+#     +trainer.num_nodes="$NNODES" \
+#     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
+#     +exp_manager.version="$JOB_IDENTIFIER" \
+#     +exp_manager.exp_dir="/tmp/exp" \
+#     +model.data.data_prefix="[1.0,gs://northam-ce-mlai-tpu/wikipedia/hfbpe_gpt_training_data_text_document]" \
+#     > /tmp/logs/rank-$RANK.log 2>&1 &
+#     # +model.data.index_mapping_dir="/tmp/index_mapping_dir" \
+#     # ${workload_arguments[@]} \
+# 
+#     echo "Launched rank $RANK with PID $!"
+#     echo "Logs are available at /tmp/logs/rank-$RANK.log"
+#     TORCH_PIDS[$LOCAL_RANK]=$!
+# done
 
 if [ "$NODE_RANK" -eq "1" ]; then
     echo "Launching nvidia-smi in daemon mode with (20 sec delay)"
