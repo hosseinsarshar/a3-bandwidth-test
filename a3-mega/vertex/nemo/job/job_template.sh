@@ -125,6 +125,7 @@ echo GPUS_PER_NODE:$GPUS_PER_NODE
 echo WORLD_SIZE:$WORLD_SIZE
 echo MASTER_PORT:$MASTER_PORT
 echo NNODES:$NNODES
+# torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
@@ -132,8 +133,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
     --rdzv_backend c10d \
     --rdzv_id $CLOUD_ML_JOB_ID \
-    --master_addr ${MASTER_ADDR} \
-    --master_port ${MASTER_PORT} \
+    --rdzv_endpoint=${MASTER_ADDR}:${MASTER_PORT} \
     NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
     --config-name="llama2-7b" \
