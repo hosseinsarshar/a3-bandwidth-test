@@ -1,5 +1,6 @@
 #!/bin/bash
 
+pip install nvitop
 
 export NCCL_LIB_DIR="/usr/local/nvidia/lib64"
 export NCCL_FASTRAK_IFNAME=eth1,eth2,eth3,eth4,eth5,eth6,eth7,eth8
@@ -25,6 +26,8 @@ export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
 export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
+export NCCL_DEBUG=INFO
+
 python -c "print('Number of nodes participating: 2')"
 echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
 echo MASTER_ADDR: $MASTER_ADDR
