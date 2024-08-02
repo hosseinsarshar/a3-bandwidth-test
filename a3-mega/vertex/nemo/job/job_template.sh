@@ -113,13 +113,13 @@ mkdir -p /tmp/index_mapping_dir
 
 export NODE_RANK=$RANK         
 export GPUS_PER_NODE=8
-export WORLD_SIZE=8
+export WORLD_SIZE=$((NNODES * GPUS_PER_NODE))
 export MASTER_PORT=2222
+export GLOBAL_BATCH_SIZE=$((WORLD_SIZE*2))
 # export MASTER_ADDR=localhost
 
 echo "sleep for 60 seconds"
 sleep 60
-
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
 echo GPUS_PER_NODE:$GPUS_PER_NODE
@@ -146,7 +146,8 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp" \
-    +model.data.data_prefix="[]" 
+    +model.data.data_prefix="[]" \
+    +model.global_batch_size="$GLOBAL_BATCH_SIZE"
 
     # torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     #     --nnodes=${NNODES} \
