@@ -148,7 +148,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp" \
     +model.data.data_prefix="[]" \
-    +model.global_batch_size="$GLOBAL_BATCH_SIZE"
+    ++model.global_batch_size="$GLOBAL_BATCH_SIZE"
 
     # torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     #     --nnodes=${NNODES} \
