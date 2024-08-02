@@ -135,9 +135,9 @@ echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
-    --rdzv_backend c10d \
+    --rdzv-backend=static \
     --rdzv_id $CLOUD_ML_JOB_ID \
-    --rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT \
+    --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
     NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
     --config-name="llama2-7b" \
@@ -146,6 +146,20 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp" \
     +model.data.data_prefix="[]" 
+
+    # torchrun  --nproc_per_node=${GPUS_PER_NODE} \
+    #     --nnodes=${NNODES} \
+    #     --rdzv_backend c10d \
+    #     --rdzv_id $CLOUD_ML_JOB_ID \
+    #     --rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT \
+    #     NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
+    #     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
+    #     --config-name="llama2-7b" \
+    #     +trainer.num_nodes="$NNODES" \
+    #     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
+    #     +exp_manager.version="$JOB_IDENTIFIER" \
+    #     +exp_manager.exp_dir="/tmp/exp" \
+    #     +model.data.data_prefix="[]" 
     #  \
     # > /tmp/logs/rank-$NODE_RANK.log 2>&1 &
     # +model.data.index_mapping_dir="/tmp/index_mapping_dir" \
