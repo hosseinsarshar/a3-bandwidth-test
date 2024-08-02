@@ -136,6 +136,7 @@ OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
     --rdzv-backend=static \
+    --node_rank=$RANK \
     --rdzv_id $CLOUD_ML_JOB_ID \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
     NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
