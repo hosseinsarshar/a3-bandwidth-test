@@ -26,7 +26,7 @@ export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
 export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
-export NCCL_DEBUG=INFO
+# export NCCL_DEBUG=INFO
 
 python -c "print('Number of nodes participating: 2')"
 echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
@@ -83,7 +83,7 @@ wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
 git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git
 
 echo "NeMo configuration file:"                                         
-cat a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs/llama2-7b.yaml | sed 's/^/| /' 
+cat a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs/llama7b-bf16-16gpus.yaml | sed 's/^/| /' 
 echo ""
 readarray -d "" workload_arguments < <(env | grep -e "^WORKLOAD_" | sed 's/^WORKLOAD_/+/' | tr '\n' '\0') 
 echo "Detected the following additional workload arguments:"            
@@ -142,7 +142,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
     NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
-    --config-name="llama2-7b" \
+    --config-name="llama7b-bf16-16gpus.yaml" \
     +trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
