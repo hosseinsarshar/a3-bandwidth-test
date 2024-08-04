@@ -41,8 +41,8 @@ exp_manager:
   create_tensorboard_logger: false
 model:
   mcore_gpt: true
-  micro_batch_size: 1
-  global_batch_size: 32
+  micro_batch_size: 2
+  global_batch_size: 1024
   rampup_batch_size: null
   tensor_model_parallel_size: 1
   pipeline_model_parallel_size: 1
@@ -171,5 +171,5 @@ model:
     enabled: true
     start_step: 0  # Global batch to start profiling
     end_step: 500 # Global batch to end profiling
-    ranks: [ 0, 1 ] # Global rank IDs to profile
+    ranks: [ 0 ] # Global rank IDs to profile
     gen_shape: False # Generate model and kernel details including input shapes

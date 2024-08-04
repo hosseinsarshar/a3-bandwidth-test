@@ -126,7 +126,7 @@ echo GPUS_PER_NODE:$GPUS_PER_NODE
 echo WORLD_SIZE:$WORLD_SIZE
 echo MASTER_PORT:$MASTER_PORT
 echo NNODES:$NNODES
-echo GLOBAL_BATCH_SIZE:$GLOBAL_BATCH_SIZE
+# echo GLOBAL_BATCH_SIZE:$GLOBAL_BATCH_SIZE
 echo rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT
 # torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=
 
@@ -147,8 +147,9 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp" \
-    +model.data.data_prefix="[]" \
-    ++model.global_batch_size="$GLOBAL_BATCH_SIZE"
+    +model.data.data_prefix="[]"
+    # \
+    # ++model.global_batch_size="$GLOBAL_BATCH_SIZE"
 
     # torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     #     --nnodes=${NNODES} \
