@@ -160,17 +160,17 @@ model:
     skip_warmup: true                                                           
     num_workers: 4                                                              
     exchange_indices_distributed: true
-    dataloader_type: single  # cyclic                                           
+    dataloader_type: single  # cyclic
     reset_position_ids: false  # Reset position ids after end-of-document token 
     reset_attention_mask: false  # Reset attention mask after end-of-document token
-    eod_mask_loss: false  # Mask loss for the end of document tokens            
+    eod_mask_loss: false  # Mask loss for the end of document tokens
     index_mapping_dir: null  # path to save index mapping .npy files, by default will save in the same location as data_prefix
   distributed_adam_bucket_merge_size: 4
   fp8_params: true
 
   nsys_profile:
     enabled: true
-    start_step: 40  # Global batch to start profiling
-    end_step: 43 # Global batch to end profiling
+    start_step: 0  # Global batch to start profiling
+    end_step: 500 # Global batch to end profiling
     ranks: [ 0 ] # Global rank IDs to profile
     gen_shape: False # Generate model and kernel details including input shapes
