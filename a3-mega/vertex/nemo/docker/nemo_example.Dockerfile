@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
   && mkdir /gcs
 
 RUN pip install git+https://github.com/NVIDIA/dllogger#egg=dllogger
+RUN pip install git+https://github.com/NVIDIA/NeMo.git@main#egg=nemo_toolkit[all]
+
 
 # COPY enable-step-times-2405.patch /opt/NeMo/enable-step-times-2405.patch
 # RUN cd /opt/NeMo/ && git apply enable-step-times-2405.patch 

@@ -84,7 +84,7 @@ git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git
 git clone https://github.com/hosseinsarshar/NeMo.git NeMoHosseinRuntime
 
 echo "NeMo configuration file:"                                         
-cat a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs/llama7b-bf16-16gpus.yaml | sed 's/^/| /' 
+cat a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs/llama2-7b.yaml | sed 's/^/| /' 
 echo ""
 readarray -d "" workload_arguments < <(env | grep -e "^WORKLOAD_" | sed 's/^WORKLOAD_/+/' | tr '\n' '\0') 
 echo "Detected the following additional workload arguments:"            
@@ -143,7 +143,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
     NeMoHosseinRuntime/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
-    --config-name="llama7b-bf16-16gpus.yaml" \
+    --config-name="llama2-7b.yaml" \
     +trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
