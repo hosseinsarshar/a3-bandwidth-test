@@ -148,7 +148,6 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="selected-configurations.yaml" \
     +trainer.num_nodes="$NNODES" \
-    +trainer.precision=16 \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER"
     # \
