@@ -106,7 +106,7 @@ model:
 
   first_stage_config:
     _target_: nemo.collections.multimodal.models.text_to_image.stable_diffusion.ldm.autoencoder.AutoencoderKLInferenceWrapper
-    from_pretrained: /sdxl_ckpts/stable-diffusion-xl-base-1.0/vae/diffusion_pytorch_model.safetensors
+    from_pretrained:
     embed_dim: 4
     monitor: val/rec_loss
     ddconfig:
