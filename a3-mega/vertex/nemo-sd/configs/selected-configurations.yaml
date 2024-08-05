@@ -70,7 +70,7 @@ model:
   use_ema: False
   scale_by_std: False
 
-  ckpt_path: /gcs/liyanglu-sd-benchmark/training-data/checkpoints/sd/512-base-ema.ckpt
+  ckpt_path: /gcs/hosseins-vertex-test/sd/sd/512-base-ema.ckpt
   load_vae: True
   load_unet: False
   load_encoder: True
@@ -160,7 +160,7 @@ model:
 #    layer: "penultimate"
     _target_: nemo.collections.multimodal.modules.stable_diffusion.encoders.modules.FrozenOpenCLIPEmbedder
     arch: "ViT-H-14"
-    version: /gcs/liyanglu-sd-benchmark/training-data/checkpoints/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k" /gcs/liyanglu-sd-benchmark/training-data/checkpoints
+    version: /gcs/hosseins-vertex-test/sd/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k" /gcs/hosseins-vertex-test/sd
     freeze: True
     layer: "penultimate"
     # cache_dir: /tmp/ssd/.cache/checkpoints/clip
