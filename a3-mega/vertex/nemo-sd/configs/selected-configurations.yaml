@@ -186,7 +186,7 @@ model:
 #    capturable: True
 #    master_weights: True
 #    max_norm: ${trainer.gradient_clip_val}
-    name: distributed_fused_adam
+    name: megatron_fused_adam
     lr: 1e-4
     weight_decay: 0.
     betas:
