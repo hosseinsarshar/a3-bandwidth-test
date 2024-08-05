@@ -160,7 +160,7 @@ model:
 #    layer: "penultimate"
     _target_: nemo.collections.multimodal.modules.stable_diffusion.encoders.modules.FrozenOpenCLIPEmbedder
     arch: "ViT-H-14"
-    version: /tmp/ssd/.cache/checkpoints/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k"
+    version: /gcs/liyanglu-sd-benchmark/training-data/checkpoints/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k" /gcs/liyanglu-sd-benchmark/training-data/checkpoints
     freeze: True
     layer: "penultimate"
     # cache_dir: /tmp/ssd/.cache/checkpoints/clip
