@@ -144,15 +144,12 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --node_rank=$RANK \
     --rdzv_id $CLOUD_ML_JOB_ID \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
-    NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_xl_train.py \
+    NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
-    --config-name="sd_xl_base_train.yaml" \
-    ++trainer.num_nodes="$NNODES" \
-    ++model.global_batch_size="1024" \
-    ++model.micro_batch_size="16" \
+    --config-name="selected-configurations.yaml" \
+    +trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
-    +exp_manager.version="$JOB_IDENTIFIER" \
-    +exp_manager.exp_dir="/tmp/exp"
+    +exp_manager.version="$JOB_IDENTIFIER"
     # \
     # ++model.global_batch_size="$GLOBAL_BATCH_SIZE"
 
@@ -174,15 +171,15 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     # +model.data.index_mapping_dir="/tmp/index_mapping_dir" \
     # ${workload_arguments[@]} \
 
-OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
-torchrun  --nproc_per_node=${GPUS_PER_NODE} \
-    --nnodes=${NNODES} \
-    --rdzv-backend=static \
-    --node_rank=$RANK \
-    --rdzv_id $CLOUD_ML_JOB_ID \
-    --rdzv_endpoint=$MASTER_ADDR:6000 \
-    NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
-    trainer.max_steps=100 model.data.synthetic_data=True trainer.devices=8 trainer.num_nodes=2  model.global_batch_size=1024 model.micro_batch_size=16
+# OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
+# torchrun  --nproc_per_node=${GPUS_PER_NODE} \
+#     --nnodes=${NNODES} \
+#     --rdzv-backend=static \
+#     --node_rank=$RANK \
+#     --rdzv_id $CLOUD_ML_JOB_ID \
+#     --rdzv_endpoint=$MASTER_ADDR:6000 \
+#     NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
+#     trainer.max_steps=100 model.data.synthetic_data=True trainer.devices=8 trainer.num_nodes=2  model.global_batch_size=1024 model.micro_batch_size=16
 
 
 echo "Launched rank $NODE_RANK with PID $!"
@@ -216,12 +213,6 @@ TORCH_PIDS[$LOCAL_RANK]=$!
 if [ "$NODE_RANK" -eq "1" ]; then
     echo "Launching nvidia-smi in daemon mode with (20 sec delay)"
     nvidia-smi dmon -d 20 -s pum &
-fi
-
-if [ "$NODE_RANK" -eq "0" ] && { ! [ -z ${EMBEDDED_TENSORBOARD_TARGET} ]; }; then
-    echo "Launching an embedded Tensorboard against log directory $EMBEDDED_TENSORBOARD_TARGET"
-    tensorboard --logdir $EMBEDDED_TENSORBOARD_TARGET &
-    wait # <-- This will indefinitely stall node rank 0
 fi
 
 # # Wait for Torch processes (might be problematic if only one fails)
