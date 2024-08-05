@@ -26,8 +26,8 @@ exp_manager:
     group: nemo-sd
     name: ${name}
     resume: True
-  create_checkpoint_callback: True
-  create_tensorboard_logger: True
+  create_checkpoint_callback: false
+  create_tensorboard_logger: false
   checkpoint_callback_params:
     every_n_train_steps: 10000
     every_n_epochs: 0

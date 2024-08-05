@@ -92,7 +92,7 @@ for workload_argument in "${workload_arguments[@]}"; do
     echo "  $workload_argument"                                           
 done 
 
-sleep 10 # <- Hack to allow some time for service to boot
+sleep 60 # <- Hack to allow some time for service to boot
 
 mount /tmp -o remount,exec 
 chmod -R a+rwx /tmp
@@ -119,8 +119,9 @@ export MASTER_PORT=2222
 export GLOBAL_BATCH_SIZE=$((WORLD_SIZE*2))
 # export MASTER_ADDR=localhost
 
-echo "sleep for 60 seconds"
-sleep 60
+# echo "sleep for 60 seconds"
+# sleep 60
+
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
 echo GPUS_PER_NODE:$GPUS_PER_NODE
@@ -145,6 +146,8 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="sd_xl_base_train.yaml" \
     ++trainer.num_nodes="$NNODES" \
+    ++model.global_batch_size="1024" \
+    ++model.micro_batch_size="16" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp"
