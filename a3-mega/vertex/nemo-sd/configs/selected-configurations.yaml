@@ -70,7 +70,7 @@ model:
   use_ema: False
   scale_by_std: False
 
-  ckpt_path: /tmp/ssd/.cache/checkpoints/sd/512-base-ema.ckpt
+  ckpt_path: /gcs/liyanglu-sd-benchmark/training-data/checkpoints/sd/512-base-ema.ckpt
   load_vae: True
   load_unet: False
   load_encoder: True
