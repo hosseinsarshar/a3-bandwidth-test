@@ -24,6 +24,7 @@ exp_manager:
   exp_dir: null
   name: megatron_llama
   create_wandb_logger: false
+  log_tflops_per_sec_per_gpu: true
   resume_if_exists: false
   resume_ignore_no_checkpoint: true
   create_checkpoint_callback: false
