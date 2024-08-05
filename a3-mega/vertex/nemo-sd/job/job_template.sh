@@ -144,7 +144,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_xl_train.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="sd_xl_base_train.yaml" \
-    +trainer.num_nodes="$NNODES" \
+    ++trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp"
