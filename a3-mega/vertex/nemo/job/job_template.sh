@@ -81,6 +81,7 @@ wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-vocab.json &&\
 wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
 
 git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git
+git clone https://github.com/hosseinsarshar/NeMo.git NeMoHosseinRuntime
 
 echo "NeMo configuration file:"                                         
 cat a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs/llama7b-bf16-16gpus.yaml | sed 's/^/| /' 
@@ -140,7 +141,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --node_rank=$RANK \
     --rdzv_id $CLOUD_ML_JOB_ID \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
-    NemoHossein/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
+    NeMoHosseinRuntime/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
     --config-name="llama7b-bf16-16gpus.yaml" \
     +trainer.num_nodes="$NNODES" \
