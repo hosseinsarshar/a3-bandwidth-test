@@ -56,6 +56,8 @@ nvidia-smi
 
 # mkdir -p /tmp/index_mapping_dir
 
+mkdir -p /tmp/ssd/
+
 # export LD_LIBRARY_PATH="/usr/local/nccl-plugin/lib64:/usr/local/cuda-12.3/lib64:/usr/local/nvidia/lib64/:${LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH="/usr/local/nccl-plugin/lib64:/usr/local/nvidia/lib64/:${LD_LIBRARY_PATH}"
 echo "Warning: Set LD_LIBRARY_PATH=$LD_LIBRARY_PATH to override the NCCL library"
@@ -171,6 +173,17 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     # > /tmp/logs/rank-$NODE_RANK.log 2>&1 &
     # +model.data.index_mapping_dir="/tmp/index_mapping_dir" \
     # ${workload_arguments[@]} \
+
+OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
+torchrun  --nproc_per_node=${GPUS_PER_NODE} \
+    --nnodes=${NNODES} \
+    --rdzv-backend=static \
+    --node_rank=$RANK \
+    --rdzv_id $CLOUD_ML_JOB_ID \
+    --rdzv_endpoint=$MASTER_ADDR:6000 \
+    NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
+    trainer.max_steps=100 model.data.synthetic_data=True trainer.devices=8 trainer.num_nodes=2  model.global_batch_size=1024 model.micro_batch_size=16
+
 
 echo "Launched rank $NODE_RANK with PID $!"
 echo "Logs are available at /tmp/logs/rank-$NODE_RANK.log"

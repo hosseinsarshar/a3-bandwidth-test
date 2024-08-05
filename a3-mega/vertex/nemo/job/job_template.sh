@@ -216,8 +216,8 @@ fi
 # done
 # 
 # sleep 600
-echo "sleep infinity on NODE_RANK:$NODE_RANK"
-sleep infinity
+# echo "sleep infinity on NODE_RANK:$NODE_RANK"
+# sleep infinity
 echo "Pod on $(hostname --fqdn) is exiting"
 
 # copy one of the yaml config files, like llama2... to the helm folder -> selected-congifuration.yaml

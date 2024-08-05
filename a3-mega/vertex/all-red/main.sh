@@ -38,7 +38,16 @@ echo MASTER_PORT: $MASTER_PORT
 
 git clone https://github.com/hosseinsarshar/ml-engineering.git ml-eng
 
-torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT ml-eng/network/benchmarks/all_reduce_bench.py 
+# torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT ml-eng/network/benchmarks/all_reduce_bench.py 
+
+OMP_NUM_THREADS=12 RANK=$RANK \
+torchrun  --nproc_per_node=${GPUS_PER_NODE} \
+    --nnodes=${NNODES} \
+    --rdzv-backend=static \
+    --node_rank=$RANK \
+    --rdzv_id $CLOUD_ML_JOB_ID \
+    --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
+    ml-eng/network/benchmarks/all_reduce_bench.py
 
 # python -u -m torch.distributed.run \
 #     --nproc_per_node 8 \
