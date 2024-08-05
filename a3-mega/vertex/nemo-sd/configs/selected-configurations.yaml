@@ -5,6 +5,7 @@ trainer:
   accelerator: gpu
   logger: False # logger provided by exp_manager
   enable_checkpointing: False
+  precision: 16
 #  use_distributed_sampler: False
   max_epochs: -1 # PTL default. In practice, max_steps will be reached first.
   max_steps: 1000 # consumed_samples = global_step * micro_batch_size * data_parallel_size * accumulate_grad_batches
