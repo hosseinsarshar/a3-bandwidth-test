@@ -1,5 +1,5 @@
 {
-  "displayName": "hossein_a3_mega_all_reduce_with_reservation",
+  "displayName": "hossein_all_reduce_n2",
   "jobSpec": {
     "workerPoolSpecs": [
       {   
@@ -22,7 +22,7 @@
               "sh", "-c"
           ],
           "args": [
-            "git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git mle && chmod +x ./a3-bandwidth-test/a3-mega/vertex/all-red/main.sh && ./a3-bandwidth-test/a3-mega/vertex/all-red/main.sh"
+            "git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git mle && chmod +x ./mle/a3-mega/vertex/all-red/main.sh && ./mle/a3-mega/vertex/all-red/main.sh"
           ],
           "env": [
               {
@@ -56,7 +56,7 @@
               "sh", "-c"
           ],
           "args": [
-            "git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git mle && chmod +x ./a3-bandwidth-test/a3-mega/vertex/all-red/main.sh && ./a3-bandwidth-test/a3-mega/vertex/all-red/main.sh"
+            "git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git mle && chmod +x ./mle/a3-mega/vertex/all-red/main.sh && ./mle/a3-mega/vertex/all-red/main.sh"
           ],
           "env": [
               {
