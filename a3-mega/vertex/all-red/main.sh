@@ -31,7 +31,7 @@ export NCCL_NVLS_ENABLE=0
 
 python -c "print('Number of nodes participating: 2')"
 echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
-echo MASTER_ADDR: $MASTER_ADDR
+echo MASTER_ADDR: $(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi)
 echo MASTER_PORT: $MASTER_PORT
 
 export NODE_RANK=$RANK         
@@ -65,7 +65,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --rdzv-backend=static \
     --node_rank=$RANK \
     --rdzv_id $CLOUD_ML_JOB_ID \
-    --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
+    --rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT \
     ml-eng/network/benchmarks/all_reduce_bench.py
 
 # python -u -m torch.distributed.run \

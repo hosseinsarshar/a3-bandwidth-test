@@ -30,7 +30,7 @@
                 "value": "/usr/local/nvidia/lib64"
               },
               {
-                "name": "NODE_COUNT",
+                "name": "NNODES",
                 "value": "2"
               }
           ]
@@ -64,7 +64,7 @@
                 "value": "/usr/local/nvidia/lib64"
               },
               {
-                "name": "NODE_COUNT",
+                "name": "NNODES",
                 "value": "2"
               }
           ]
