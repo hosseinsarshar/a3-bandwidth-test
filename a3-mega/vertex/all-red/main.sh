@@ -52,6 +52,7 @@ echo MASTER_PORT:$MASTER_PORT
 echo NNODES:$NNODES
 
 # python -c "import os; [print('{0}: {1}'.format(name, value)) for name, value in os.environ.items()]" # this is to pring all the environment variables
+sleep 10
 
 git clone https://github.com/hosseinsarshar/ml-engineering.git ml-eng
 
