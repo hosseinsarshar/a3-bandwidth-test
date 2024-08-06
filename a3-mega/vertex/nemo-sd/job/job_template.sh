@@ -34,6 +34,13 @@ echo MASTER_ADDR: $MASTER_ADDR
 echo LOCAL_RANK: $LOCAL_RANK
 echo JOB_COMPLETION_INDEX: $JOB_COMPLETION_INDEX
 
+echo Copying files from gcs to local SSD:
+echo Copying CLIP model:
+
+mkdir -p /tmp/gcs-sd
+
+cp -r /gcs/hosseins-vertex-test/sd/sd /tmp/gcs-sd/sd
+cp -r /gcs/hosseins-vertex-test/sd/clip /tmp/gcs-sd/clip
 
 function on_script_completion {
     # Note: This semaphore is used to terminate the TCPx side-car
