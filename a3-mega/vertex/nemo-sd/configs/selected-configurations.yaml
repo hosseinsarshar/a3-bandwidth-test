@@ -7,9 +7,9 @@ trainer:
   enable_checkpointing: False
   precision: 16
 #  use_distributed_sampler: False
-  max_epochs: -1 # PTL default. In practice, max_steps will be reached first.
-  max_steps: 1000 # consumed_samples = global_step * micro_batch_size * data_parallel_size * accumulate_grad_batches
-  log_every_n_steps: 10000
+  max_epochs: 1 # PTL default. In practice, max_steps will be reached first.
+  max_steps: 500 # consumed_samples = global_step * micro_batch_size * data_parallel_size * accumulate_grad_batches
+  log_every_n_steps: 20
   accumulate_grad_batches: 1 # do not modify, grad acc is automatic for training megatron models
   gradient_clip_val: 1.0
   benchmark: False
