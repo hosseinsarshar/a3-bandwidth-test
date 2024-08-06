@@ -13,6 +13,9 @@ trainer:
   limit_test_batches: 50
   accumulate_grad_batches: 1
   gradient_clip_val: 1.0
+  enable_model_summary: True
+  enable_progress_bar: True
+
 exp_manager:
   name: ${name}
   create_wandb_logger: False
