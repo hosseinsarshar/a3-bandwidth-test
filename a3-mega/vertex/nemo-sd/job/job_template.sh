@@ -142,6 +142,10 @@ echo NNODES:$NNODES
 echo rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT
 # torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=
 
+echo "sleep infinity on NODE_RANK:$NODE_RANK"
+sleep infinity
+
+
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 # OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
 
