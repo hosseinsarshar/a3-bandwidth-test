@@ -1,18 +1,20 @@
 name: null
+
 trainer:
   devices: 8
   accelerator: gpu
-  precision: 16
   logger: False # logger provided by exp_manager
   enable_checkpointing: False
 #  use_distributed_sampler: False
-  max_epochs: null # PTL default. In practice, max_steps will be reached first.
-  max_steps: 500 # consumed_samples = global_step * micro_batch_size * data_parallel_size * accumulate_grad_batches
+  max_epochs: -1 # PTL default. In practice, max_steps will be reached first.
+  max_steps: 1000 # consumed_samples = global_step * micro_batch_size * data_parallel_size * accumulate_grad_batches
   log_every_n_steps: 1
-  limit_val_batches: 32
-  limit_test_batches: 50
-  accumulate_grad_batches: 1
+  accumulate_grad_batches: 1 # do not modify, grad acc is automatic for training megatron models
   gradient_clip_val: 1.0
+  benchmark: False
+  enable_model_summary: True
+  enable_progress_bar: True
+
 exp_manager:
   name: ${name}
   create_wandb_logger: False
@@ -40,8 +42,8 @@ exp_manager:
     validate_original_weights: False
     every_n_steps: 1
     cpu_offload: False
-  create_preemption_callback: False
-  log_step_timing: False  # leads to sync and not allowed during CUDA graph capturing
+  create_preemption_callback: True
+  log_step_timing: True  # leads to sync and not allowed during CUDA graph capturing
 
 
 model:
@@ -157,10 +159,10 @@ model:
 #    layer: "penultimate"
     _target_: nemo.collections.multimodal.modules.stable_diffusion.encoders.modules.FrozenOpenCLIPEmbedder
     arch: "ViT-H-14"
-    version: /workspace/gcs-sd/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k" /gcs/hosseins-vertex-test/sd
+    version: /workspace/gcs-sd/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k"
     freeze: True
     layer: "penultimate"
-    # cache_dir: /tmp/ssd/.cache/checkpoints/clip
+    # cache_dir: /ssd/.cache/checkpoints/clip
 
   # miscellaneous
   seed: 1234
@@ -170,17 +172,6 @@ model:
   ddp_overlap: False
 
   optim:
-    name: megatron_fused_adam
-    lr: 1e-4
-    weight_decay: 0.
-    betas:
-      - 0.9
-      - 0.999
-    sched:
-      name: WarmupHoldPolicy
-      warmup_steps: 10000
-      hold_steps: 10000000000000 # Incredibly large value to hold the lr as constant
-
 #    name: megatron_fused_adam
 #    lr: 1e-4
 #    weight_decay: 0.
@@ -194,28 +185,28 @@ model:
 #    capturable: True
 #    master_weights: True
 #    max_norm: ${trainer.gradient_clip_val}
-#     name: megatron_fused_adam
-#     lr: 1e-4
-#     weight_decay: 0.
-#     betas:
-#       - 0.9
-#       - 0.999
-#     sched:
-#       name: WarmupHoldPolicy
-#       warmup_steps: 1000
-#       hold_steps: 10000000000000 # Incredibly large value to hold the lr as constant
-#     # bucket_cap_mb: 288  # 865910724*2/1024**2/6, round up to multiple of 32
-#     overlap_grad_sync: True
-#     overlap_param_sync: False
-#     contiguous_grad_buffer: True
-#     contiguous_param_buffer: True
-#     store_params: True
-#     dtype: torch.float32
-#     grad_sync_dtype: torch.float16
-#     param_sync_dtype: torch.float16
-#     capturable: True
-#     distribute_within_nodes: True
-# 
+    name: distributed_fused_adam
+    lr: 1e-4
+    weight_decay: 0.
+    betas:
+      - 0.9
+      - 0.999
+    sched:
+      name: WarmupHoldPolicy
+      warmup_steps: 1000
+      hold_steps: 10000000000000 # Incredibly large value to hold the lr as constant
+    bucket_cap_mb: 288  # 865910724*2/1024**2/6, round up to multiple of 32
+    overlap_grad_sync: True
+    overlap_param_sync: False
+    contiguous_grad_buffer: True
+    contiguous_param_buffer: True
+    store_params: True
+    dtype: torch.float32
+    grad_sync_dtype: torch.float16
+    param_sync_dtype: torch.float16
+    capturable: True
+    distribute_within_nodes: True
+
   # Nsys profiling options
   nsys_profile:
     enabled: True
@@ -230,7 +221,7 @@ model:
       synthetic_data: True # dataset_path and local_root_path can be empty when using synthetic data
       synthetic_data_length: 4608000
       train:
-          dataset_path: null # /tmp/ssd/.cache/datasets/laion-400m/webdataset-moments-filtered/*.tar
+          dataset_path: null # /ssd/.cache/datasets/laion-400m/webdataset-moments-filtered/*.tar
           augmentations:
             resize_smallest_side: 512
             center_crop_h_w: 512, 512
@@ -239,4 +230,4 @@ model:
 
       webdataset:
           infinite_sampler: True
-          local_root_path: null # /tmp/ssd/.cache/datasets/laion-400m/webdataset-moments-filtered
+          local_root_path: null # /ssd/.cache/datasets/laion-400m/webdataset-moments-filtered

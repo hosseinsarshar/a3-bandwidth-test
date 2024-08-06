@@ -161,7 +161,9 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --config-name="selected-configurations.yaml" \
     +trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
-    +exp_manager.version="$JOB_IDENTIFIER"
+    +exp_manager.version="$JOB_IDENTIFIER" \
+    ++model.global_batch_size=512
+
     # \
     # ++model.global_batch_size="$GLOBAL_BATCH_SIZE"
 
