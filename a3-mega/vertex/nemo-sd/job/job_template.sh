@@ -164,6 +164,22 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     +exp_manager.version="$JOB_IDENTIFIER" \
     ++model.global_batch_size=512
 
+OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
+torchrun  --nproc_per_node=${GPUS_PER_NODE} \
+    --nnodes=${NNODES} \
+    --rdzv-backend=static \
+    --node_rank=$RANK \
+    --rdzv_id $CLOUD_ML_JOB_ID \
+    --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
+    a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
+    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+    --config-name="liyang_helm.yaml" \
+    +trainer.num_nodes="$NNODES" \
+    +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
+    +exp_manager.version="$JOB_IDENTIFIER" \
+    ++model.global_batch_size=512
+
+
     # \
     # ++model.global_batch_size="$GLOBAL_BATCH_SIZE"
 
