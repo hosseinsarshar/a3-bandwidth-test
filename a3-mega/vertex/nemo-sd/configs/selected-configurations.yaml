@@ -1,8 +1,4 @@
-name:
-  name: stable_diffusion_2
-  results_dir:
-  time_limit: 0:10:00
-  dependency: singleton
+name: null
 trainer:
   devices: 8
   accelerator: gpu
@@ -73,7 +69,7 @@ model:
   use_ema: False
   scale_by_std: False
 
-  ckpt_path: /workspace/gcs-sd/sd/sd/512-base-ema.ckpt
+  ckpt_path: /workspace/gcs-sd/sd/512-base-ema.ckpt
   load_vae: True
   load_unet: False
   load_encoder: True
@@ -163,7 +159,7 @@ model:
 #    layer: "penultimate"
     _target_: nemo.collections.multimodal.modules.stable_diffusion.encoders.modules.FrozenOpenCLIPEmbedder
     arch: "ViT-H-14"
-    version: /workspace/gcs-sd/sd/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k" /gcs/hosseins-vertex-test/sd
+    version: /workspace/gcs-sd/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k" /gcs/hosseins-vertex-test/sd
     freeze: True
     layer: "penultimate"
     # cache_dir: /tmp/ssd/.cache/checkpoints/clip
