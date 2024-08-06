@@ -1,21 +1,24 @@
-name: null
-
+name:
+  name: stable_diffusion_2
+  results_dir:
+  time_limit: 0:10:00
+  dependency: singleton
 trainer:
   devices: 8
   accelerator: gpu
+  precision: 16
   logger: False # logger provided by exp_manager
   enable_checkpointing: False
-  precision: 16
 #  use_distributed_sampler: False
   max_epochs: null # PTL default. In practice, max_steps will be reached first.
+  max_time: 05:23:30:00
   max_steps: 500 # consumed_samples = global_step * micro_batch_size * data_parallel_size * accumulate_grad_batches
   log_every_n_steps: 1
-  accumulate_grad_batches: 1 # do not modify, grad acc is automatic for training megatron models
+  val_check_interval: 500
+  limit_val_batches: 32
+  limit_test_batches: 50
+  accumulate_grad_batches: 1
   gradient_clip_val: 1.0
-  benchmark: False
-  enable_model_summary: True
-  enable_progress_bar: False
-
 exp_manager:
   name: ${name}
   create_wandb_logger: False

@@ -25,8 +25,8 @@ export NODE_COUNT=2
 export ACCELERATOR_ARG="type=nvidia-h100-mega-80gb,count=8,gpu-driver-version=latest"
 
 kubectl config get-contexts
-kubectl config set-context gke_northam-ce-mlai-tpu_asia-northeast1_a3-mega-asia
-
+kubectl config set-context gke_northam-ce-mlai-tpu_europe-west4_a3-cluster
+gcloud container clusters get-credentials a3-cluster --region europe-west4 --project northam-ce-mlai-tpu
 
 # for N in $(seq 1 8); do
 #   SUBNET_RANGE=192.168.$N.0/24
