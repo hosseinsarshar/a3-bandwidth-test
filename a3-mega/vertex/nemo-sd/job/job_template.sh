@@ -27,6 +27,9 @@ export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_gues
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
 # export NCCL_DEBUG=INFO
+export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
+export TORCH_DISTRIBUTED_DEBUG=DETAIL
+
 
 python -c "print('Number of nodes participating: 2')"
 echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
@@ -122,11 +125,13 @@ mkdir -p /tmp/exp/
 mkdir -p /tmp/nemo-experiments/results
 mkdir -p /tmp/index_mapping_dir
 
+export RANK=0
 export NODE_RANK=$RANK         
 export GPUS_PER_NODE=8
 export WORLD_SIZE=$((NNODES * GPUS_PER_NODE))
 export MASTER_PORT=2222
 export GLOBAL_BATCH_SIZE=$((WORLD_SIZE*2))
+export RDZV=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT
 # export MASTER_ADDR=localhost
 
 # echo "sleep for 60 seconds"
@@ -138,6 +143,7 @@ echo GPUS_PER_NODE:$GPUS_PER_NODE
 echo WORLD_SIZE:$WORLD_SIZE
 echo MASTER_PORT:$MASTER_PORT
 echo NNODES:$NNODES
+echo RDZV:$RDZV
 # echo GLOBAL_BATCH_SIZE:$GLOBAL_BATCH_SIZE
 echo rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT
 # torchrun --rdzv_backend c10d --rdzv_id $CLOUD_ML_JOB_ID --nnodes 2 --nproc_per_node 8 --rdzv_endpoint=
@@ -156,7 +162,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --rdzv-backend=static \
     --node_rank=$RANK \
     --rdzv_id $CLOUD_ML_JOB_ID \
-    --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
+    --rdzv_endpoint=$RDZV \
     NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="selected-configurations.yaml" \
@@ -174,7 +180,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
     NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
-    --config-name="sd-train.yaml" \
+    --config-name="sd2-train.yaml" \
     +trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
@@ -191,7 +197,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
     a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
-    --config-name="liyang_helm.yaml" \
+    --config-name="sd2-train.yaml" \
     +trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \

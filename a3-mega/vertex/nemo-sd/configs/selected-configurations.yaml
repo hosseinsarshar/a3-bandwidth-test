@@ -44,7 +44,7 @@ exp_manager:
     every_n_steps: 1
     cpu_offload: False
   create_preemption_callback: False
-  log_step_timing: True  # leads to sync and not allowed during CUDA graph capturing
+  log_step_timing: False  # leads to sync and not allowed during CUDA graph capturing
 
 
 model:
