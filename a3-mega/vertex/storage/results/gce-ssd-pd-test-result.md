@@ -1,11 +1,13 @@
 # Storage Test
 
 Type: `SSD persistent disk` with `NVME`
+
 Number of Nodes: `1`
+
 Storage type: `Balanced persistent disk`
-Node 
-Path:
-`/gcs/hosseins-vertex-test/sd/fio-test-$RANK`
+
+
+Path: `/home/${USER}/storage-bench`
 
 # filesize=16k read
 
