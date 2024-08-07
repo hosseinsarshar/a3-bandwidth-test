@@ -68,10 +68,10 @@ model:
   scale_factor: 0.18215
   use_ema: False
   scale_by_std: False
-  # ckpt_path: /workspace/gcs-sd/sd/512-base-ema.ckpt
-  # load_vae: True
-  # load_unet: False
-  # load_encoder: True
+  ckpt_path: /workspace/gcs-sd/sd/512-base-ema.ckpt
+  load_vae: True
+  load_unet: False
+  load_encoder: True
 
   ignore_keys: []
   parameterization: eps
