@@ -162,7 +162,7 @@ model:
     version: /workspace/gcs-sd/clip/open_clip_pytorch_model.bin # "laion2b_s32b_b79k"
     freeze: True
     layer: "penultimate"
-    # cache_dir: /ssd/.cache/checkpoints/clip
+    # cache_dir: /workspace/gcs-sd/clip
 
   # miscellaneous
   seed: 1234

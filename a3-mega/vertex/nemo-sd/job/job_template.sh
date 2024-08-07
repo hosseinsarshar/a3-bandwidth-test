@@ -163,11 +163,11 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
     NeMoHosseinRuntime/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
-    --config-name="selected-configurations.yaml" \
+    --config-name="final-test.yaml" \
     +trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
-    ++model.global_batch_size=512
+    ++model.max_steps=5000 \
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
