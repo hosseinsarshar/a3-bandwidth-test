@@ -14,6 +14,7 @@ trainer:
   gradient_clip_val: 1.0
   benchmark: False
   enable_model_summary: True
+  enable_progress_bar: True
   limit_val_batches: 0
 
 exp_manager:
