@@ -31,11 +31,16 @@ export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
 # export NCCL_DEBUG=INFO
 
+apt-get update -y
+apt-get install -y fio
+
 git clone https://github.com/stas00/ml-engineering.git
 cd ml-engineering/storage
 
 export path_to_test=/gcs/hosseins-vertex-test/sd/fio-test-$RANK
 ./fio-scan $path_to_test
+
+
 
 # # Wait for Torch processes (might be problematic if only one fails)
 # for PID in ${TORCH_PIDS[*]}; do
@@ -51,3 +56,44 @@ echo "Pod on $(hostname --fqdn) is exiting"
 # copy one of the yaml config files, like llama2... to the helm folder -> selected-congifuration.yaml
 
 
+# # filesize=16k read                                                                                                                                           
+#                                                                                                                                                               
+# | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
+# | -------: | ------: | -------: | ---: |                                                                                                                      
+# |    299.3 |    13.4 |     3419 |   16 |                                                                                                                      
+#                                                                                                                                                               
+# # filesize=16k write                                                                                                                                          
+#                                                                                                                                                               
+# | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
+# | -------: | ------: | -------: | ---: |                                                                                                                      
+# |     89.2 |    44.9 |    11483 |   16 |                                                                                                                      
+#                                                                                                                                                               
+#                                                                                                                                                               
+#                                                                                                                                                               
+# # filesize=1m read                                                                                                                                            
+#                                                                                                                                                               
+# | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
+# | -------: | ------: | -------: | ---: |                                                                                                                      
+# |    117.0 |    34.2 |     8754 |   16 |                                                                                                                      
+#                                                                                                                                                               
+# # filesize=1m write                                                                                                                                           
+#                                                                                                                                                               
+# | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
+# | -------: | ------: | -------: | ---: |                                                                                                                      
+# |     89.7 |    44.6 |    11414 |   16 |                                                                                                                      
+#                                                                                                                                                               
+#                                                                                                                                                               
+#                                                                                                                                                               
+# # filesize=1g read                                                                                                                                            
+#                                                                                                                                                               
+# | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
+# | -------: | ------: | -------: | ---: |                                                                                                                      
+# |    115.9 |    34.5 |     8837 |   16 |                                                                                                                      
+#                                                                                                                                                               
+# # filesize=1g write                                                                                                                                           
+#                                                                                                                                                               
+# | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
+# | -------: | ------: | -------: | ---: |                                                                                                                      
+# |    100.4 |    39.9 |    10198 |   16 |                                                                                                                      
+#                                                                                                                                                               
+# 
