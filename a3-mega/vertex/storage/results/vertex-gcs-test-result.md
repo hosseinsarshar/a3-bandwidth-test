@@ -5,6 +5,8 @@ Number of Nodes: `1`
 
 Path:
 `/gcs/hosseins-vertex-test/sd/fio-test-$RANK`
+Node region: `us-east4`
+Storage region: `us-east4`
 
 ## filesize=16k read                                                                                                                                           
                                                                                                                                                               
