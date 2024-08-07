@@ -53,7 +53,7 @@ model:
   native_amp_init_scale: 65536.0 # Init scale for grad scaler used at fp16
 
 
-  linear_start: 0.00085
+  linear_start: 0.00085 # RuntimeError: mat1 and mat2 shapes cannot be multiplied (1232x1024 and 768x320)
   linear_end: 0.012
   num_timesteps_cond: 1
   log_every_t: 200
@@ -95,32 +95,33 @@ model:
 
   unet_config:
     _target_: nemo.collections.multimodal.modules.stable_diffusion.diffusionmodules.openaimodel.UNetModel
-    from_pretrained: #/ckpts/nemo-v1-2.ckpt
-    from_NeMo: False #Must be specified when from pretrained is not None, False means loading unet from HF ckpt
+    from_pretrained:
+    from_NeMo: #Must be specified when from pretrained is not None, False means loading unet from HF ckpt
     image_size: 32 # unused
     in_channels: 4
     out_channels: 4
     model_channels: 320
     attention_resolutions:
-      - 4
-      - 2
-      - 1
+    - 4
+    - 2
+    - 1
     num_res_blocks: 2
     channel_mult:
     - 1
     - 2
     - 4
     - 4
-    num_heads: 8
+    num_head_channels: 64
     use_spatial_transformer: true
+    use_linear_in_transformer: true
     transformer_depth: 1
-    context_dim: 768
+    context_dim: 1024
     use_checkpoint: False
     legacy: False
     use_flash_attention: True
-    unet_precision: fp32
-    resblock_gn_groups: 32
-    use_te_fp8: False
+    resblock_gn_groups: 16
+    unet_precision: fp16
+    timesteps: ${model.timesteps}
 
   first_stage_config:
     _target_: nemo.collections.multimodal.models.text_to_image.stable_diffusion.ldm.autoencoder.AutoencoderKL
