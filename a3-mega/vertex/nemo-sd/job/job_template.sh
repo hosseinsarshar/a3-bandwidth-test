@@ -145,6 +145,7 @@ echo rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo loca
 echo "sleep infinity on NODE_RANK:$NODE_RANK"
 sleep infinity
 
+export NNODES=1
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 # OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
