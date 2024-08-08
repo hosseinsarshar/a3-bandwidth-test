@@ -39,9 +39,11 @@ cd ml-engineering/storage
 
 chmod +x ./fio-scan
 
-export path_to_test=/gcs/hosseins-vertex-test/sd/fio-test-$RANK
+export path_to_test=/gcs/hosseins-vertex-test/network-test/fio-test-$RANK
 echo "Participating nodes: $NNODES"
 echo "Bandwidth test starts on RANK:$RANK to test PATH:$path_to_test"
+
+mkdir -p $path_to_test
 
 ./fio-scan $path_to_test
 

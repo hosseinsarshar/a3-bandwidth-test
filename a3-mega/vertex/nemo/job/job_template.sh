@@ -26,7 +26,8 @@ export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
 export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
-# export NCCL_DEBUG=INFO
+# export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
+# export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
 python -c "print('Number of nodes participating: 2')"
 echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS

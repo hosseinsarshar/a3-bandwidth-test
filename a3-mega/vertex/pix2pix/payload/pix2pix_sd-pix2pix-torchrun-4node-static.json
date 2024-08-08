@@ -1,0 +1,84 @@
+{
+  "displayName": "briankang_sd_pix2pix_4host_torchrun_static_202400807_11_50am",
+  "jobSpec": {
+    "workerPoolSpecs": [
+      {   
+        "machineSpec": {
+          "machineType": "a3-megagpu-8g",
+          "acceleratorType": "NVIDIA_H100_MEGA_80GB",
+          "acceleratorCount": 8,
+          "reservationAffinity": {
+            "reservationAffinityType": "SPECIFIC_RESERVATION",
+            "key": "compute.googleapis.com/reservation-name",
+            "values": [
+                "projects/disco-sector-292704/zones/us-east4-a/reservations/snap-a3-mega-reservation"
+            ]   
+          }
+        }, 
+        "replicaCount": "1",
+          "diskSpec": {
+          "bootDiskType": "pd-ssd",
+          "bootDiskSizeGb": 500
+        },
+        "containerSpec": {
+          "imageUri": "us-east5-docker.pkg.dev/google.com/vertex-training-dlexamples/nemo-sd-training-repository/sd-accelerate_train:latest",
+          "command": [
+              "sh", "-c"
+          ],
+          "args": [
+              "mkdir trainer && cp -r /gcs/dlexamples-shared-data/pix2pix/* ./trainer && chmod -R +x trainer && ./trainer/sd-pix2pix-4node-torchrun-static.sh"
+          ],
+          "env": [
+              {
+                "name": "LD_LIBRARY_PATH",
+                "value": "/usr/local/nvidia/lib64"
+              },
+              {
+                "name": "NODE_COUNT",
+                "value": "4"
+              }
+          ]
+        }
+      },
+      {
+        "machineSpec": {
+          "machineType": "a3-megagpu-8g",
+          "acceleratorType": "NVIDIA_H100_MEGA_80GB",
+          "acceleratorCount": 8,
+          "reservationAffinity": {
+            "reservationAffinityType": "SPECIFIC_RESERVATION",
+            "key": "compute.googleapis.com/reservation-name",
+            "values": [
+                "projects/disco-sector-292704/zones/us-east4-a/reservations/snap-a3-mega-reservation"
+            ]   
+          }
+        },
+        "replicaCount": "3",
+          "diskSpec": {
+          "bootDiskType": "pd-ssd",
+          "bootDiskSizeGb": 500
+        },
+        "containerSpec": {
+          "imageUri": "us-east5-docker.pkg.dev/google.com/vertex-training-dlexamples/nemo-sd-training-repository/sd-accelerate_train:latest",
+          "command": [
+              "sh", "-c"
+          ],
+          "args": [
+              "mkdir trainer && cp -r /gcs/dlexamples-shared-data/pix2pix/* ./trainer && chmod -R +x trainer && ./trainer/sd-pix2pix-4node-torchrun-static.sh"
+          ],
+          "env": [
+              {
+                "name": "LD_LIBRARY_PATH",
+                "value": "/usr/local/nvidia/lib64"
+              },
+              {
+                "name": "NODE_COUNT",
+                "value": "4"
+              }
+          ]
+        }
+      }
+    ],
+    "enableWebAccess": true
+  }
+}

@@ -26,6 +26,9 @@ export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
 export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
+
+
+
 export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
 export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
@@ -256,6 +259,8 @@ TORCH_PIDS[$LOCAL_RANK]=$!
 #     > /tmp/logs/rank-$RANK.log 2>&1 &
 #     # +model.data.index_mapping_dir="/tmp/index_mapping_dir" \
 #     # ${workload_arguments[@]} \
+
+#  gsutil perfdiag -n 1000 -c 5 -k 10 -s 200M -o out.json gs://hosseins-a3-gke/ > ~/gutils-test.log 2>&1 &
 # 
 #     echo "Launched rank $RANK with PID $!"
 #     echo "Logs are available at /tmp/logs/rank-$RANK.log"
