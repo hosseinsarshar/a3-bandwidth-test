@@ -31,16 +31,16 @@ export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
 # export NCCL_DEBUG=INFO
 
-sudo apt-get update
-sudo apt-get install -y fio
+apt-get update
+apt-get install -y fio
 
 git clone https://github.com/stas00/ml-engineering.git
 cd ml-engineering/storage
 
 chmod +x ./fio-scan
 
-export path_to_test=/gcs/hosseins-vertex-test/sd/fio-test-$RANK
-./fio-scan $path_to_test
+export path_to_test=/home/$USER/hosseins-llama3/storage-test
+sudo ./fio-scan $path_to_test
 
 
 echo "sleep infinity on NODE_RANK:$NODE_RANK"

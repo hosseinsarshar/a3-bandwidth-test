@@ -1,24 +1,32 @@
 
 # Storage Test
 
+Node Type: `A3-Mega`
+
+Platform: `Vertex`
+
 Number of Nodes: `1`
+
+Storage Type: `GCS` with `GCS FUSE` - `Standard`
 
 Path:
 `/gcs/hosseins-vertex-test/sd/fio-test-$RANK`
+
 Node region: `us-east4`
+
 Storage region: `us-east4`
 
 ## filesize=16k read                                                                                                                                           
                                                                                                                                                               
 | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
 | -------: | ------: | -------: | ---: |                                                                                                                      
-|    299.3 |    13.4 |     3419 |   16 |                                                                                                                      
+|    305.0 |    13.1 |     3354 |   16 |                                                                                                                      
                                                                                                                                                               
 ## filesize=16k write                                                                                                                                          
                                                                                                                                                               
 | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
 | -------: | ------: | -------: | ---: |                                                                                                                      
-|     89.2 |    44.9 |    11483 |   16 |                                                                                                                      
+|     89.3 |    44.8 |    11468 |   16 |                                                                                                                      
                                                                                                                                                               
                                                                                                                                                               
                                                                                                                                                               
@@ -26,13 +34,13 @@ Storage region: `us-east4`
                                                                                                                                                               
 | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
 | -------: | ------: | -------: | ---: |                                                                                                                      
-|    117.0 |    34.2 |     8754 |   16 |                                                                                                                      
+|    117.0 |    34.2 |     8752 |   16 |                                                                                                                      
                                                                                                                                                               
 ## filesize=1m write                                                                                                                                           
                                                                                                                                                               
 | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
 | -------: | ------: | -------: | ---: |                                                                                                                      
-|     89.7 |    44.6 |    11414 |   16 |                                                                                                                      
+|     87.9 |    45.5 |    11642 |   16 |                                                                                                                      
                                                                                                                                                               
                                                                                                                                                               
                                                                                                                                                               
@@ -40,11 +48,12 @@ Storage region: `us-east4`
                                                                                                                                                               
 | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
 | -------: | ------: | -------: | ---: |                                                                                                                      
-|    115.9 |    34.5 |     8837 |   16 |                                                                                                                      
+|    113.5 |    35.3 |     9018 |   16 |                                                                                                                      
                                                                                                                                                               
 ## filesize=1g write                                                                                                                                           
                                                                                                                                                               
 | lat msec | bw MBps |   IOPS   | jobs |                                                                                                                      
 | -------: | ------: | -------: | ---: |                                                                                                                      
-|    100.4 |    39.9 |    10198 |   16 |                                                                                                                      
+|    100.8 |    39.7 |    10159 |   16 |                                                                                                                      
                                                                                                                                                               
+                  

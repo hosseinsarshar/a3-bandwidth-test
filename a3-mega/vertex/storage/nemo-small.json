@@ -1,5 +1,5 @@
 {
-  "displayName": "hossein_storage_test",
+  "displayName": "hossein_nemo_sd_2_nodes",
   "jobSpec": {
     "workerPoolSpecs": [
       {   
@@ -16,17 +16,13 @@
           }
         },  
         "replicaCount": "1",
-        "diskSpec": {
-          "bootDiskType": "pd-ssd",
-          "bootDiskSizeGb": 800
-        },
         "containerSpec": {
           "imageUri": "classicboyir/nemo:02",
           "command": [
               "sh", "-c"
           ],
           "args": [
-            "sleep infinity"
+            "git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git && chmod +x ./a3-bandwidth-test/a3-mega/vertex/nemo-sd/job/job_template.sh && ./a3-bandwidth-test/a3-mega/vertex/nemo-sd/job/job_template.sh"
           ],
           "env": [
               {
@@ -54,17 +50,13 @@
           }
         },
         "replicaCount": "1",
-        "diskSpec": {
-          "bootDiskType": "pd-ssd",
-          "bootDiskSizeGb": 800
-        },
         "containerSpec": {
           "imageUri": "classicboyir/nemo:02",
           "command": [
               "sh", "-c"
           ],
           "args": [
-            "sleep infinity"
+            "git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git && chmod +x ./a3-bandwidth-test/a3-mega/vertex/nemo-sd/job/job_template.sh && ./a3-bandwidth-test/a3-mega/vertex/nemo-sd/job/job_template.sh"
           ],
           "env": [
               {
