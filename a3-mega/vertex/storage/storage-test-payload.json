@@ -1,5 +1,5 @@
 {
-  "displayName": "hossein_nemo_sd_2_nodes",
+  "displayName": "hossein_storage_bandwidth",
   "jobSpec": {
     "workerPoolSpecs": [
       {   
@@ -16,6 +16,10 @@
           }
         },  
         "replicaCount": "1",
+        "diskSpec": {
+          "bootDiskType": "pd-ssd",
+          "bootDiskSizeGb": 800
+        },
         "containerSpec": {
           "imageUri": "classicboyir/nemo:02",
           "command": [
@@ -50,6 +54,10 @@
           }
         },
         "replicaCount": "1",
+        "diskSpec": {
+          "bootDiskType": "pd-ssd",
+          "bootDiskSizeGb": 800
+        },
         "containerSpec": {
           "imageUri": "classicboyir/nemo:02",
           "command": [
