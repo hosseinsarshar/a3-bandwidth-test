@@ -625,6 +625,7 @@ def main():
         dataset = load_dataset(
             args.dataset_name,
             args.dataset_config_name,
+            streaming=True,
             cache_dir=args.cache_dir,
         )
     else:

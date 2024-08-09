@@ -53,9 +53,15 @@ export JOB_IDENTIFIER=sd-pix2pix-1node-$CLOUD_ML_JOB_ID
 #/opt/conda/bin/accelerate config update --config_file ./trainer/accelerate-files/2host_config.yaml
 
 export MODEL_NAME="/gcs/dlexamples-shared-data/diffusers-pix2pix/models--runwayml--stable-diffusion-v1-5"
+# export MODEL_NAME="gs://dlexamples-shared-data/diffusers-pix2pix/models--runwayml--stable-diffusion-v1-5"
+export MODEL_PATH="./local_model_path"
 export DATASET_ID="/gcs/dlexamples-shared-data/diffusers-pix2pix/datasets--timbrooks--instructpix2pix-clip-filtered/preprocessed"
 export CACHE_DIR="/tmp/sd-pix2pix-cache"
 export OUTPUT_DIR="/tmp/sd-pix2pix-output"
+
+mkdir -p $MODEL_PATH
+gsutil -m cp -r $MODEL_NAME $MODEL_PATH
+cp -r $MODEL_NAME $MODEL_PATH
 
 mkdir -p /tmp/localssd/$CACHE_DIR
 chmod 777 -R /tmp/localssd/$CACHE_DIR
@@ -68,13 +74,16 @@ pip install ftfy
 pip install tensorboard
 pip install xformers
 
+export DATASET_ID="/gcs/dlexamples-shared-data/diffusers-pix2pix/dataset_5000"
+
+
 chmod +x -R diffusers
-torchrun --nnodes=1 \
+OMP_NUM_THREADS=12 torchrun --nnodes=1 \
     --nproc-per-node=8 \
     --standalone \
     diffusers/examples/instruct_pix2pix/train_instruct_pix2pix.py \
     --pretrained_model_name_or_path=$MODEL_NAME \
-    --train_data_dir=$DATASET_ID \
+    --dataset_name=$DATASET_ID \
     --dataloader_num_workers=20 \
     --use_ema \
     --cache_dir=$CACHE_DIR \
@@ -82,7 +91,7 @@ torchrun --nnodes=1 \
     --enable_xformers_memory_efficient_attention \
     --resolution=256 --random_flip \
     --train_batch_size=4 --gradient_accumulation_steps=4 --gradient_checkpointing \
-    --max_train_steps=1000 \
+    --max_train_steps=100 \
     --checkpointing_steps=1000 --checkpoints_total_limit=1 \
     --learning_rate=5e-05 --lr_warmup_steps=0 \
     --conditioning_dropout_prob=0.05 \
@@ -94,7 +103,7 @@ chmod +x -R diffusers
 torchrun --nnodes=1 \
     --nproc-per-node=8 \
     --standalone \
-    diffusers/examples/instruct_pix2pix/train_instruct_pix2pix.py \
+    a3-bandwidth-test/a3-mega/vertex/pix2pix/code/train_instruct_pix2pix.py \
     --pretrained_model_name_or_path=$MODEL_NAME \
     --train_data_dir=$DATASET_ID \
     --dataloader_num_workers=20 \
@@ -109,8 +118,13 @@ torchrun --nnodes=1 \
     --learning_rate=5e-05 --lr_warmup_steps=0 \
     --conditioning_dropout_prob=0.05 \
     --mixed_precision=fp16 \
-    --original_image_column=original_image \
+    --original_image_column=image \
     --seed=42
+
+train_instruct_pix2pix.py: error: unrecognized arguments: -- =20 --use_ema --cache_dir=/tmp/sd-pix2pix-cache --output_dir=/tmp/sd-pix2pix-output --enable_xfor
+mers_memory_efficient_attention --resolution=256 --random_flip --train_batch_size=4 --gradient_accumulation_steps=4 --gradient_checkpointing --max_train_steps
+=1000 --checkpointing_steps=1000 --checkpoints_total_limit=1 --learning_rate=5e-05 --lr_warmup_steps=0 --conditioning_dropout_prob=0.05 --mixed_precision=fp16
+ --original_image_column=original_image --seed=42                                                                                                             
 
 
 echo "sleep infinity on NODE_RANK:$RANK"
