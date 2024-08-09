@@ -633,7 +633,7 @@ def main():
             data_files["train"] = os.path.join(args.train_data_dir, "**")
         dataset = load_dataset(
             "imagefolder",
-            streaming=True,
+            # streaming=True,
             data_files=data_files,
             cache_dir=args.cache_dir,
         )
@@ -643,8 +643,7 @@ def main():
     # Preprocessing the datasets.
     # We need to tokenize inputs and targets.
     column_names = dataset["train"].column_names
-
-    breakpoint()
+    print(f"============== {column_names=} ==============")
 
     # 6. Get the column names for input/target.
     dataset_columns = DATASET_NAME_MAPPING.get(args.dataset_name, None)
