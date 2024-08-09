@@ -644,6 +644,8 @@ def main():
     # We need to tokenize inputs and targets.
     column_names = dataset["train"].column_names
 
+    breakpoint()
+
     # 6. Get the column names for input/target.
     dataset_columns = DATASET_NAME_MAPPING.get(args.dataset_name, None)
     if args.original_image_column is None:
