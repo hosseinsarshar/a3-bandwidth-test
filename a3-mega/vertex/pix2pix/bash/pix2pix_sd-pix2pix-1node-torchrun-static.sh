@@ -81,13 +81,14 @@ chmod +x -R diffusers
 OMP_NUM_THREADS=12 torchrun --nnodes=1 \
     --nproc-per-node=8 \
     --standalone \
-    diffusers/examples/instruct_pix2pix/train_instruct_pix2pix.py \
+    a3-bandwidth-test/a3-mega/vertex/pix2pix/code/train_instruct_pix2pix.py \
     --pretrained_model_name_or_path=$MODEL_NAME \
     --dataset_name=$DATASET_ID \
     --dataloader_num_workers=20 \
     --use_ema \
     --cache_dir=$CACHE_DIR \
     --output_dir=$OUTPUT_DIR \
+    --streaming=true \
     --enable_xformers_memory_efficient_attention \
     --resolution=256 --random_flip \
     --train_batch_size=4 --gradient_accumulation_steps=4 --gradient_checkpointing \

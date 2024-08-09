@@ -278,6 +278,12 @@ def parse_args():
         help="Scale the learning rate by the number of GPUs, gradient accumulation steps, and batch size.",
     )
     parser.add_argument(
+        "--streaming",
+        action="store_true",
+        default=False,
+        help="Enable streaming.",
+    )
+    parser.add_argument(
         "--lr_scheduler",
         type=str,
         default="constant",
@@ -620,12 +626,13 @@ def main():
 
     # In distributed training, the load_dataset function guarantees that only one local process can concurrently
     # download the dataset.
+    print(f'{args.streaming=}')
     if args.dataset_name is not None:
         # Downloading and loading a dataset from the hub.
         dataset = load_dataset(
             args.dataset_name,
             args.dataset_config_name,
-            streaming=True,
+            streaming=args.streaming,
             cache_dir=args.cache_dir,
         )
     else:
