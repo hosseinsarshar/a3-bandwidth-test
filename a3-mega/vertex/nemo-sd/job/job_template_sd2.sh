@@ -143,6 +143,10 @@ mkdir -p /ckpts
 mv diffusion_pytorch_model.bin /ckpts/vae-2-base.bin
 ls /ckpts/
 
+wget https://huggingface.co/laion/CLIP-ViT-H-14-laion2B-s32B-b79K/resolve/main/open_clip_pytorch_model.bin
+mkdir -p /workspace/gcs-sd/clip-LAION-2B
+mv open_clip_pytorch_model.bin /workspace/gcs-sd/clip-LAION-2B/open_clip_pytorch_model_clip_LAION.bin
+
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
 echo GPUS_PER_NODE:$GPUS_PER_NODE
@@ -164,6 +168,10 @@ echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 
 export TORCH_LOGS="+dynamo"
 export TORCHDYNAMO_VERBOSE=1
+
+export TORCH_LOGS="all"
+export TORCHDYNAMO_VERBOSE=0
+
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
