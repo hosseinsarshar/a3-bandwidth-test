@@ -28,7 +28,6 @@ export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
 
 
-
 export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
 export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
@@ -157,10 +156,14 @@ echo rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo loca
 echo "sleep infinity on NODE_RANK:$NODE_RANK"
 sleep infinity
 
+export RANK=0
 export NNODES=1
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 # OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
+
+export TORCH_LOGS="+dynamo"
+export TORCHDYNAMO_VERBOSE=1
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
@@ -174,7 +177,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --config-name="sd2-train-github.yaml" \
     trainer.max_steps=200 \
     model.data.synthetic_data=True \
-    trainer.devices=8 \
+    trainer.devices=1 \
     trainer.num_nodes=1 \
     model.global_batch_size=128
 
