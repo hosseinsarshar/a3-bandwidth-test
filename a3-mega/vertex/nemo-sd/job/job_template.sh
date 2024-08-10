@@ -139,6 +139,10 @@ export RDZV=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;f
 # echo "sleep for 60 seconds"
 # sleep 60
 
+qwget https://huggingface.co/CompVis/stable-diffusion-v1-4/resolve/main/vae/diffusion_pytorch_model.bin
+mkdir -p /ckpts
+mv diffusion_pytorch_model.bin /ckpts/vae.bin
+
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
 echo GPUS_PER_NODE:$GPUS_PER_NODE
@@ -156,6 +160,25 @@ export NNODES=1
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 # OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
+
+OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
+torchrun  --nproc_per_node=${GPUS_PER_NODE} \
+    --nnodes=${NNODES} \
+    --rdzv-backend=static \
+    --node_rank=$RANK \
+    --rdzv_id $CLOUD_ML_JOB_ID \
+    --rdzv_endpoint=localhost:$MASTER_PORT \
+    /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
+    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+    --config-name="sd-train-github.yaml" \
+    trainer.max_steps=200 \
+    model.data.synthetic_data=True \
+    trainer.devices=8 \
+    trainer.num_nodes=1 \
+    model.global_batch_size=128
+
+
+
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \

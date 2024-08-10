@@ -44,6 +44,15 @@ CACHE_DIR="/tmp/sd-pix2pix-cache"
 MODEL_NAME="/gcs/dlexamples-shared-data/diffusers-pix2pix/models--runwayml--stable-diffusion-v1-5"
 OUTPUT_DIR="/tmp/sd-pix2pix-output"
 
+dataset = load_dataset(
+            DATASET_ID,
+            None,
+            cache_dir=CACHE_DIR,
+            streaming=True,
+        )
+
+column_names = dataset["train"].column_names
+print(f"============== {column_names=} ==============")
 
 dataloader_num_workers=20
 use_ema=True
@@ -82,6 +91,9 @@ dataset = load_dataset(
             cache_dir=CACHE_DIR,
             streaming=True,
         )
+
+column_names = dataset["train"].column_names
+print(f"============== {column_names=} ==============")
 
 
 dataset_raw = load_dataset(
