@@ -139,9 +139,10 @@ export RDZV=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;f
 # echo "sleep for 60 seconds"
 # sleep 60
 
-qwget https://huggingface.co/stabilityai/stable-diffusion-2-base/resolve/main/vae/diffusion_pytorch_model.bin
+wget https://huggingface.co/stabilityai/stable-diffusion-2-base/resolve/main/vae/diffusion_pytorch_model.bin
 mkdir -p /ckpts
-mv diffusion_pytorch_model.bin /ckpts/vae.bin
+mv diffusion_pytorch_model.bin /ckpts/vae-2-base.bin
+ls /ckpts/
 
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
@@ -170,7 +171,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --rdzv_endpoint=localhost:$MASTER_PORT \
     /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
-    --config-name="sd-train-github.yaml" \
+    --config-name="sd2-train-github.yaml" \
     trainer.max_steps=200 \
     model.data.synthetic_data=True \
     trainer.devices=8 \
