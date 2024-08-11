@@ -20,7 +20,7 @@ from types import MethodType
 import torch
 import torch._dynamo
 import torch.distributed
-# from checkpoint_tools import MultiprocessCheckpointIO
+from checkpoint_tools import MultiprocessCheckpointIO
 from megatron.core import parallel_state
 from mlperf_logging.mllog import constants
 from nemo.collections.multimodal.models.text_to_image.stable_diffusion.ldm.ddpm import (
@@ -151,10 +151,10 @@ def main(cfg) -> None:
     cb.save_full_cfg(cfg)
     callbacks.append(cb)
 
-    # checkpoint_io = MultiprocessCheckpointIO(
-    #     checkpoint_io=TorchCheckpointIO(),
-    # )
-    # plugins.append(checkpoint_io)
+    checkpoint_io = MultiprocessCheckpointIO(
+        checkpoint_io=TorchCheckpointIO(),
+    )
+    plugins.append(checkpoint_io)
 
     trainer = Trainer(
         plugins=plugins,
