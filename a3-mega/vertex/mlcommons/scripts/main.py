@@ -26,6 +26,7 @@ try:
     from lightning.pytorch.callbacks import Callback
     from lightning.pytorch.trainer import Trainer
     from lightning.pytorch.utilities import rank_zero_info
+    import lightning as L
     LIGHTNING_PACK_NAME = "lightning.pytorch."
 except:
     from pytorch_lightning import seed_everything
@@ -190,7 +191,7 @@ def nondefault_trainer_args(opt):
     # create an argument parsser
     parser = argparse.ArgumentParser()
     # add pytorch lightning trainer default arguments
-    parser = Trainer()
+    # parser = Trainer()
     # parse the empty arguments to obtain the default values
     args = parser.parse_args([])
     # return all non-default arguments
@@ -394,7 +395,7 @@ if __name__ == "__main__":
     sys.path.append(os.getcwd())
 
     parser = get_parser()
-    parser = Trainer.add_argparse_args(parser)
+    # parser = Trainer.add_argparse_args(parser)
 
     opt, unknown = parser.parse_known_args()
     # Veirfy the arguments are both specified
@@ -605,7 +606,7 @@ if __name__ == "__main__":
         trainer_kwargs["callbacks"].append(instantiate_from_config(modelckpt_cfg))
 
         # Create a Trainer object with the specified command-line arguments and keyword arguments, and set the log directory
-        trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
+        trainer = L.Trainer(trainer_opt, **vars(trainer_kwargs))
         trainer.logdir = logdir
 
         # Create a data module based on the configuration file
