@@ -184,15 +184,21 @@ export TORCHDYNAMO_VERBOSE=1
 export TORCH_LOGS="all"
 export TORCHDYNAMO_VERBOSE=0
 
+mkdir /nemo-experiments
+
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 python a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="lyiang-selected-config.yaml" \
-    trainer.max_steps=200 \
+    +exp_manager.version="$JOB_IDENTIFIER" \
+    +exp_manager.exp_dir="/nemo-experiments/" \
+    ++trainer.max_steps=200 \
+    ++trainer.log_every_n_steps=1 \
     model.data.synthetic_data=True \
     trainer.devices=1 \
     +trainer.num_nodes=1 \
     model.global_batch_size=128
+    
 
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
