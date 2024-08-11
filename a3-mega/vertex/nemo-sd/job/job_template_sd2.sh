@@ -187,6 +187,25 @@ export TORCHDYNAMO_VERBOSE=0
 mkdir /nemo-experiments
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
+torchrun  --nproc_per_node=${GPUS_PER_NODE} \
+    --nnodes=1 \
+    --rdzv-backend=static \
+    --node_rank=$RANK \
+    --rdzv_id $CLOUD_ML_JOB_ID \
+    --rdzv_endpoint=localhost:$MASTER_PORT \
+    a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
+    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+    --config-name="lyiang-selected-config.yaml" \
+    +exp_manager.version="$JOB_IDENTIFIER" \
+    +exp_manager.exp_dir="/nemo-experiments/" \
+    ++trainer.max_steps=200 \
+    ++trainer.log_every_n_steps=1 \
+    model.data.synthetic_data=True \
+    trainer.devices=8 \
+    +trainer.num_nodes=1 \
+    model.global_batch_size=256
+
+OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 python a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="lyiang-selected-config.yaml" \
@@ -195,11 +214,14 @@ python a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     ++trainer.max_steps=200 \
     ++trainer.log_every_n_steps=1 \
     model.data.synthetic_data=True \
-    trainer.devices=1 \
+    trainer.devices=8 \
     +trainer.num_nodes=1 \
     model.global_batch_size=128
     
-
+for ((LOCAL_RANK=0; LOCAL_RANK <= $((GPUS_PER_NODE - 1)); LOCAL_RANK++)); do
+          RANK=$((8*$NODE_RANK + $LOCAL_RANK))
+          echo $RANK
+done
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
@@ -215,7 +237,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     model.data.synthetic_data=True \
     trainer.devices=1 \
     trainer.num_nodes=1 \
-    model.global_batch_size=128
+    model.global_batch_size=512
 
 
 

@@ -1,0 +1,54 @@
+diff --git a/nemo/collections/multimodal/data/stable_diffusion/stable_diffusion_dataset.py b/nemo/collections/multimodal/data/stable_diffusion/stable_diffusion_dataset.py
+index 61f1f9c91..70c636711 100644
+--- a/nemo/collections/multimodal/data/stable_diffusion/stable_diffusion_dataset.py
++++ b/nemo/collections/multimodal/data/stable_diffusion/stable_diffusion_dataset.py
+@@ -164,6 +164,7 @@ def build_train_valid_precached_datasets(
+             image_key=model_cfg.first_stage_key,
+             txt_key=model_cfg.cond_stage_key,
+             context_dim=model_cfg.unet_config.context_dim,
++            fake_len=data_cfg.synthetic_data_length,
+         )
+     else:
+         train_data = WebDatasetCommon(
+@@ -225,6 +226,7 @@ def build_train_valid_precached_clip_datasets(model_cfg, consumed_samples):
+             txt_key=model_cfg.cond_stage_key,
+             context_dim=model_cfg.unet_config.context_dim,
+             seq_len=77,
++            fake_len=data_cfg.synthetic_data_length,
+         )
+     else:
+         train_data = WebDatasetCommon(
+diff --git a/nemo/collections/multimodal/models/text_to_image/stable_diffusion/ldm/ddpm.py b/nemo/collections/multimodal/models/text_to_image/stable_diffusion/ldm/ddpm.py
+index a96c3c47e..b6d084eb7 100644
+--- a/nemo/collections/multimodal/models/text_to_image/stable_diffusion/ldm/ddpm.py
++++ b/nemo/collections/multimodal/models/text_to_image/stable_diffusion/ldm/ddpm.py
+@@ -1710,9 +1710,13 @@ class MegatronLatentDiffusion(NLPAdapterModelMixin, MegatronBaseModel):
+         output_tensor = self.model(x, c, *args, **kwargs)
+         return output_tensor
+ 
++    def on_train_batch_start(self, batch: Any, batch_idx: int, unused: int = 0):
++        super().on_train_batch_start(batch, batch_idx, unused)
++        self._on_train_batch_start(batch, batch_idx)
++
+     @rank_zero_only
+     @torch.no_grad()
+-    def on_train_batch_start(self, batch, batch_idx, dataloader_idx=0):
++    def _on_train_batch_start(self, batch, batch_idx, dataloader_idx=0):
+         if self.cfg.scale_by_std and self.current_epoch == 0 and self.global_step == 0 and batch_idx == 0:
+             assert self.cfg.scale_factor == 1.0, 'rather not use custom rescaling and std-rescaling simultaneously'
+             batch[self.cfg.first_stage_key] = batch[self.cfg.first_stage_key].cuda(non_blocking=True)
+diff --git a/nemo/collections/nlp/parts/megatron_trainer_builder.py b/nemo/collections/nlp/parts/megatron_trainer_builder.py
+index b25ce249d..23388dfef 100644
+--- a/nemo/collections/nlp/parts/megatron_trainer_builder.py
++++ b/nemo/collections/nlp/parts/megatron_trainer_builder.py
+@@ -135,7 +135,9 @@ class MegatronTrainerBuilder:
+         plugins = self._plugins()
+         # enable_progress_bar is True by default. If cfg.trainer.enable_progress_bar=False, CustomProgressBar is not appended to callbacks
+         if 'enable_progress_bar' not in self.cfg.trainer or self.cfg.trainer.enable_progress_bar:
+-            callbacks = [CustomProgressBar()]
++            if not callbacks:
++                callbacks = []
++            callbacks.append(CustomProgressBar())
+         trainer = Trainer(plugins=plugins, strategy=strategy, **self.cfg.trainer, callbacks=callbacks)
+         # Restore the precision value after Trainer is built.
+         self.cfg.trainer.precision = precision
