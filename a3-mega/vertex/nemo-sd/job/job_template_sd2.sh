@@ -26,7 +26,8 @@ export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
 export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
-export LD_LIBRARY_PATH=\"${NCCL_LIB_DIR}:${LD_LIBRARY_PATH}\"
+export LD_LIBRARY_PATH=\"${NCCL_LIB_DIR}:${LD_LIBRARY_PATH}:/usr/local/cuda-12.4/:${NCCL_LIB_DIR}/libcuda.so.1\"
+
 
 export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
 export TORCH_DISTRIBUTED_DEBUG=DETAIL
@@ -82,6 +83,15 @@ ldconfig -p | grep libcuda | sed 's/^/  /'
 echo "Contents of /usr/local/nccl-plugin/lib64:"
 ls /usr/local/nccl-plugin/lib64 | sed 's/^/  /'
 
+# export LD_LIBRARY_PATH="/usr/local/nccl-plugin/lib64:/usr/local/cuda-12.3/lib64:/usr/local/nvidia/lib64/:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="/usr/local/nccl-plugin/lib64:/usr/local/nvidia/lib64/:${LD_LIBRARY_PATH}"
+echo "Warning: Set LD_LIBRARY_PATH=$LD_LIBRARY_PATH to override the NCCL library"
+
+ldconfig /usr/local/nvidia/lib64/
+echo "Added /usr/local/nvidia/lib64/ to ldconfig:"
+ldconfig -p | grep libcuda | sed 's/^/  /'
+
+
 export SSD_MOUNT_PATH=/tmp/ssd
 
 mkdir -p $SSD_MOUNT_PATH
@@ -126,6 +136,10 @@ mkdir -p /tmp/exp/
 mkdir -p /tmp/nemo-experiments/results
 mkdir -p /tmp/index_mapping_dir
 
+
+export RANK=0
+export NNODES=1
+
 export NODE_RANK=$RANK         
 export GPUS_PER_NODE=8
 export WORLD_SIZE=$((NNODES * GPUS_PER_NODE))
@@ -160,8 +174,6 @@ echo rdzv_endpoint=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo loca
 echo "sleep infinity on NODE_RANK:$NODE_RANK"
 sleep infinity
 
-export RANK=0
-export NNODES=1
 
 echo "Launching Torch distributed as node rank $NODE_RANK out of $NNODES nodes"
 # OMP_NUM_THREADS=12 RANK=$RANK LOCAL_RANK=$LOCAL_RANK HYDRA_FULL_ERROR=1 \
