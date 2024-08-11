@@ -69,7 +69,7 @@ model:
   use_ema: False
   scale_by_std: False
 
-  ckpt_path: /workspace/checkpoint/512-base-ema.ckpt
+  ckpt_path: /workspace/gcs-sd/sd/512-base-ema.ckpt
   load_vae: True
   load_unet: False
   load_encoder: True

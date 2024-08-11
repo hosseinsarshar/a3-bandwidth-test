@@ -191,7 +191,7 @@ python a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     trainer.max_steps=200 \
     model.data.synthetic_data=True \
     trainer.devices=1 \
-    trainer.num_nodes=1 \
+    +trainer.num_nodes=1 \
     model.global_batch_size=128
 
 
