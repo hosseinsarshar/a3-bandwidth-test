@@ -26,7 +26,7 @@ export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
 export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
-
+export LD_LIBRARY_PATH=\"${NCCL_LIB_DIR}:${LD_LIBRARY_PATH}\"
 
 export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
 export TORCH_DISTRIBUTED_DEBUG=DETAIL
@@ -90,7 +90,6 @@ touch $SSD_MOUNT_PATH/hello-from-$HOSTNAME.txt
 echo "Local SSD contents (path $SSD_MOUNT_PATH):"; ls $SSD_MOUNT_PATH | sed 's/^/  /'
 
 
-
 echo "Downloading GPT vocabulary files"
 wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-vocab.json &&\
 wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
@@ -146,6 +145,7 @@ ls /ckpts/
 wget https://huggingface.co/laion/CLIP-ViT-H-14-laion2B-s32B-b79K/resolve/main/open_clip_pytorch_model.bin
 mkdir -p /workspace/gcs-sd/clip-LAION-2B
 mv open_clip_pytorch_model.bin /workspace/gcs-sd/clip-LAION-2B/open_clip_pytorch_model_clip_LAION.bin
+ls /workspace/gcs-sd/clip-LAION-2B
 
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
@@ -171,6 +171,16 @@ export TORCHDYNAMO_VERBOSE=1
 
 export TORCH_LOGS="all"
 export TORCHDYNAMO_VERBOSE=0
+
+OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
+python a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
+    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+    --config-name="lyiang-selected-config.yaml" \
+    trainer.max_steps=200 \
+    model.data.synthetic_data=True \
+    trainer.devices=1 \
+    trainer.num_nodes=1 \
+    model.global_batch_size=128
 
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
