@@ -196,17 +196,17 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="lyiang-selected-config.yaml" \
-    +exp_manager.version="$JOB_IDENTIFIER" \
+    +exp_manager.version="$JOB_IDENTIFIER-4" \
     +exp_manager.exp_dir="/nemo-experiments/" \
-    ++trainer.max_steps=200 \
+    ++trainer.max_steps=1000 \
     ++trainer.log_every_n_steps=1 \
-    model.data.synthetic_data=True \
-    trainer.devices=8 \
+    ++model.data.synthetic_data=True \
+    ++trainer.devices=8 \
     +trainer.num_nodes=1 \
-    model.global_batch_size=256
+    ++model.global_batch_size=256
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
-python a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
+python /workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="lyiang-selected-config.yaml" \
     +exp_manager.version="$JOB_IDENTIFIER" \
@@ -214,7 +214,7 @@ python a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     ++trainer.max_steps=200 \
     ++trainer.log_every_n_steps=1 \
     model.data.synthetic_data=True \
-    trainer.devices=8 \
+    trainer.devices=1 \
     +trainer.num_nodes=1 \
     model.global_batch_size=128
     
