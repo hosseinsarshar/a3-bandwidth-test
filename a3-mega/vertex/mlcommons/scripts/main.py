@@ -190,7 +190,7 @@ def nondefault_trainer_args(opt):
     # create an argument parsser
     parser = argparse.ArgumentParser()
     # add pytorch lightning trainer default arguments
-    parser = Trainer.add_argparse_args(parser)
+    parser = Trainer()
     # parse the empty arguments to obtain the default values
     args = parser.parse_args([])
     # return all non-default arguments
