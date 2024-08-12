@@ -191,7 +191,7 @@ model:
       synthetic_data: True # dataset_path and local_root_path can be empty when using synthetic data
       synthetic_data_length: 4608000
       train:
-          dataset_path: null # /tmp/ssd/.cache/datasets/laion-400m/webdataset-moments-filtered/*.tar
+          dataset_path: # /tmp/ssd/.cache/datasets/laion-400m/webdataset-moments-filtered/*.tar
           augmentations:
             resize_smallest_side: 512
             center_crop_h_w: 512, 512
