@@ -178,8 +178,6 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     model.global_batch_size=128
 
 
-
-
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
@@ -194,6 +192,7 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
     +exp_manager.version="$JOB_IDENTIFIER" \
     ++model.max_steps=5000 \
+
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \

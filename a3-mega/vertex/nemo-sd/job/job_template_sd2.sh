@@ -46,6 +46,7 @@ mkdir -p ./gcs-sd
 
 echo Copying SD Checkpoint:
 cp -r /gcs/hosseins-vertex-test/sd/sd ./gcs-sd/sd
+
 echo Copying CLIP Model:
 cp -r /gcs/hosseins-vertex-test/sd/clip ./gcs-sd/clip
 
@@ -379,12 +380,10 @@ sudo chmod +777 -R /mnt/gcs/hosseins-a3-gke
 sudo gcsfuse -o allow_other,rw -file-mode=777 -dir-mode=777 --implicit-dirs \
     hosseins-a3-gke /mnt/gcs/hosseins-a3-gke
 
-
 sudo mkdir -p /home/$USER/hosseins-llama3
 sudo chmod +777 -R /home/$USER/hosseins-llama3
 sudo gcsfuse -o allow_other,rw -file-mode=777 -dir-mode=777 --implicit-dirs \
     hosseins-llama3 /home/$USER/hosseins-llama3
-
 
 # copy one of the yaml config files, like llama2... to the helm folder -> selected-congifuration.yaml
 

@@ -52,7 +52,6 @@ model:
   global_batch_size: 16 # will use more micro batches to reach global batch size
   native_amp_init_scale: 65536.0 # Init scale for grad scaler used at fp16
 
-
   linear_start: 0.00085
   linear_end: 0.012
   num_timesteps_cond: 1
@@ -156,8 +155,6 @@ model:
   #    freeze: True
   #    layer: "last"
 
-
-
   # miscellaneous
   seed: 1234
   resume_from_checkpoint: null # manually set the checkpoint file to load from
@@ -187,11 +184,11 @@ model:
 
   data:
       num_workers: 16
-      synthetic_data: True # dataset_path and local_root_path can be empty when using synthetic data
+      synthetic_data: False # dataset_path and local_root_path can be empty when using synthetic data
       synthetic_data_length: 10000
       train:
           dataset_path:
-            - /datasets/coyo/wdinfo/coyo-700m/wdinfo-selene.pkl
+            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/*.tar
           augmentations:
             resize_smallest_side: 512
             center_crop_h_w: 512, 512
