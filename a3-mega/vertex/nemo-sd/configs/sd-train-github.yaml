@@ -188,7 +188,7 @@ model:
       synthetic_data_length: 10000
       train:
           dataset_path:
-            - hosseins-vertex-test/webdataset-moments-filtered/{00000..00831}.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/{00000..00831}.tar
             # - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00001.tar
             # - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00002.tar
             # - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00003.tar
