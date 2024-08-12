@@ -65,10 +65,10 @@ echo MASTER_PORT:$MASTER_PORT
 echo NNODES:$NNODES
 echo RDZV:$RDZV
 
-sudo mkdir -p /mnt/gcs2/hosseins-a3-gke
-sudo chmod +777 -R /mnt/gcs/hosseins-a3-gke
-sudo gcsfuse -o allow_other,rw -file-mode=777 -dir-mode=777 --implicit-dirs \
-    hosseins-a3-gke /mnt/gcs/hosseins-a3-gke
+mkdir -p /root/gcs2/hosseins-vertex-test
+chmod +777 -R /root/gcs2/hosseins-vertex-test
+gcsfuse -o allow_other,rw -file-mode=777 -dir-mode=777 --implicit-dirs \
+    hosseins-vertex-test /root/gcs2/hosseins-vertex-test
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
@@ -85,6 +85,11 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     trainer.devices=$GPUS_PER_NODE \
     trainer.num_nodes=$NNODES \
     model.global_batch_size=256
+
+torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
+    trainer.max_steps=500 \
+    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+    --config-name="sd-train-github.yaml"
 
 torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
     trainer.max_steps=100 \

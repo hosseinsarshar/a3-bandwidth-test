@@ -188,18 +188,18 @@ model:
       synthetic_data_length: 10000
       train:
           dataset_path:
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00000.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00001.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00002.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00003.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00004.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00005.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00006.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00007.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00008.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00009.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00010.tar
-            - /gcs/hosseins-vertex-test/webdataset-moments-filtered/00011.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00000.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00001.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00002.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00003.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00004.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00005.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00006.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00007.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00008.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00009.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00010.tar
+            - https://storage.googleapis.com/hosseins-vertex-test/webdataset-moments-filtered/00011.tar
           augmentations:
             resize_smallest_side: 512
             center_crop_h_w: 512, 512
@@ -207,5 +207,6 @@ model:
           filterings:
 
       webdataset:
+          use_webdataset: True
           infinite_sampler: False
           local_root_path: /datasets/coyo
