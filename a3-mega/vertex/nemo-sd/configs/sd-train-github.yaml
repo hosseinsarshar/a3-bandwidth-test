@@ -209,4 +209,4 @@ model:
       webdataset:
           use_webdataset: True
           infinite_sampler: False
-          local_root_path:
+          local_root_path: ""
