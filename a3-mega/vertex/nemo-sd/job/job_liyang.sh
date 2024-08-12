@@ -33,6 +33,8 @@ export LD_LIBRARY_PATH=\"${NCCL_LIB_DIR}:${LD_LIBRARY_PATH}:/usr/local/cuda-12.4
 export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
 export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
+cd /workspace
+
 # export NCCL_DEBUG=INFO
 
 python -c "print('Number of nodes participating: 2')"
@@ -67,4 +69,16 @@ ldconfig -p | grep libcuda | sed 's/^/  /'
 
 git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git
 
+apt -y update && apt -y install gdb python3.10-dbg
+
+pip install "transformers>=4.36.0,<=4.40.2"
+
+cd /workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/
+
+python -c "
+from mlperf_logging.mllog import constants
+from mlperf_logging_utils import mllogger
+mllogger.event(key=constants.CACHE_CLEAR, value=True)"
+
+cd /workspace
 

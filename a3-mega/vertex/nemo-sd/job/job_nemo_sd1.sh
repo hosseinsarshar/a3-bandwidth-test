@@ -55,7 +55,7 @@ export GPUS_PER_NODE=8
 export WORLD_SIZE=$((NNODES * GPUS_PER_NODE))
 export MASTER_PORT=2222
 export GLOBAL_BATCH_SIZE=$((WORLD_SIZE*2))
-export RDZV=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT
+export RDZV=$(if [[ $RANK -gt 1 ]]; then echo $MASTER_ADDR;else echo localhost;fi):$MASTER_PORT
 
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
@@ -80,21 +80,28 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="sd-train-github.yaml" \
-    trainer.max_steps=500 \
+    trainer.max_steps=1000 \
     model.data.synthetic_data=True \
     trainer.devices=$GPUS_PER_NODE \
     trainer.num_nodes=$NNODES \
     model.global_batch_size=256
 
 torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
-    trainer.max_steps=500 \
+    trainer.max_steps=10000 \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="sd-train-github.yaml"
 
 torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
-    trainer.max_steps=100 \
+    trainer.max_steps=1000 \
     model.data.synthetic_data=False \
-    model.data.train.dataset_path="gs://hosseins-vertex-test/webdataset-moments-filtered/00000.tar" \
+    model.data.train.dataset_path="gs://hosseins-vertex-test/webdataset-moments-filtered/" \
+    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+    --config-name="sd-train-github.yaml"
+
+
+torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
+    trainer.max_steps=1000 \
+    model.data.synthetic_data=True \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="sd-train-github.yaml"
 
