@@ -33,6 +33,10 @@ export LD_LIBRARY_PATH=\"${NCCL_LIB_DIR}:${LD_LIBRARY_PATH}:/usr/local/cuda-12.4
 export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
 export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
+export TORCH_LOGS="+dynamo"
+export TORCHDYNAMO_VERBOSE=1
+
+
 cd /workspace
 
 # export NCCL_DEBUG=INFO
@@ -72,6 +76,7 @@ git clone https://github.com/hosseinsarshar/a3-bandwidth-test.git
 apt -y update && apt -y install gdb python3.10-dbg
 
 pip install "transformers>=4.36.0,<=4.40.2"
+pip install huggingface-hub==0.23.2
 
 cd /workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/
 
@@ -82,3 +87,18 @@ mllogger.event(key=constants.CACHE_CLEAR, value=True)"
 
 cd /workspace
 
+cd a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/
+git apply nemo_mlperf.patch
+
+OMP_NUM_THREADS=12 HYDRA_FULL_ERROR=1 \
+python /workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
+    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+    --config-name="lyiang-selected-config.yaml" \
+    +exp_manager.version="$JOB_IDENTIFIER" \
+    +exp_manager.exp_dir="/nemo-experiments/" \
+    ++trainer.max_steps=200 \
+    ++trainer.log_every_n_steps=1 \
+    model.data.synthetic_data=True \
+    trainer.devices=1 \
+    +trainer.num_nodes=1 \
+    model.global_batch_size=128

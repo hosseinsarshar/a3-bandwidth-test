@@ -26,20 +26,17 @@ export NCCL_TUNER_CONFIG_PATH=${NCCL_LIB_DIR}/a3plus_tuner_config.textproto
 export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_guest_config.textproto
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
-# export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
-# export TORCH_DISTRIBUTED_DEBUG=DETAIL
+export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
+export TORCH_DISTRIBUTED_DEBUG=DETAIL
 
-python -c "print('Number of nodes participating: 2')"
+export TORCH_LOGS="+dynamo"
+export TORCHDYNAMO_VERBOSE=1
+
 echo NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS: $NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS
 echo MASTER_ADDR: $MASTER_ADDR
 echo LOCAL_RANK: $LOCAL_RANK
 echo JOB_COMPLETION_INDEX: $JOB_COMPLETION_INDEX
 
-
-function on_script_completion {
-    # Note: This semaphore is used to terminate the TCPx side-car
-    touch /semaphore/workload_terminated
-}
 
 export CLOUD_ML_JOB_ID=123
 export JOB_IDENTIFIER=nemo-vertex-$CLOUD_ML_JOB_ID
@@ -142,12 +139,11 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --node_rank=$RANK \
     --rdzv_id $CLOUD_ML_JOB_ID \
     --rdzv_endpoint=$MASTER_ADDR:$MASTER_PORT \
-    NeMoHosseinRuntime/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
+    /opt/NeMo/examples/nlp/language_modeling/megatron_gpt_pretraining.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo/nemo-configs" \
     --config-name="llama2-7b.yaml" \
     +trainer.num_nodes="$NNODES" \
     +exp_manager.explicit_log_dir="/tmp/nemo-experiments/results" \
-    +exp_manager.version="$JOB_IDENTIFIER" \
     +exp_manager.exp_dir="/tmp/exp" \
     +model.data.data_prefix="[]"
     # \
