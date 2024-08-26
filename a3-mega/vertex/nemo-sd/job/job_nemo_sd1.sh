@@ -27,7 +27,12 @@ export NCCL_SHIMNET_GUEST_CONFIG_CHECKER_CONFIG_FILE=${NCCL_LIB_DIR}/a3plus_gues
 export NCCL_FASTRAK_PLUGIN_ACCEPT_TIMEOUT_MS=600000
 export NCCL_NVLS_ENABLE=0
 # export LD_LIBRARY_PATH=\"${NCCL_LIB_DIR}:${LD_LIBRARY_PATH}:/usr/local/cuda-12.3/:${NCCL_LIB_DIR}/libcuda.so.1\"
-export LD_LIBRARY_PATH="/usr/local/nvidia/lib64"
+export LD_LIBRARY_PATH="/usr/local/nccl-plugin/lib64:/usr/local/nvidia/lib64/:${LD_LIBRARY_PATH}"
+echo "Warning: Set LD_LIBRARY_PATH=$LD_LIBRARY_PATH to override the NCCL library"
+
+ldconfig /usr/local/nvidia/lib64/
+echo "Added /usr/local/nvidia/lib64/ to ldconfig:"
+ldconfig -p | grep libcuda | sed 's/^/  /'
 
 # export TORCH_CPP_LOG_LEVEL=INFO # this is to turn on the verbose torch logs
 # export TORCH_DISTRIBUTED_DEBUG=DETAIL
