@@ -118,7 +118,8 @@ export GLOBAL_BATCH_SIZE=$((WORLD_SIZE*2))
 # export MASTER_ADDR=localhost
 
 echo "sleep for 60 seconds"
-sleep 60
+sleep 10
+
 echo RANK:$RANK
 echo NODE_RANK:$NODE_RANK
 echo GPUS_PER_NODE:$GPUS_PER_NODE

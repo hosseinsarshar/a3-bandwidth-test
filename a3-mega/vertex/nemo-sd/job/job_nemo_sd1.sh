@@ -50,6 +50,7 @@ wget https://huggingface.co/CompVis/stable-diffusion-v1-4/resolve/main/vae/diffu
 mkdir -p /ckpts
 mv diffusion_pytorch_model.bin /ckpts/vae.bin
 
+export NNODES=1
 export NODE_RANK=$RANK
 export GPUS_PER_NODE=8
 export WORLD_SIZE=$((NNODES * GPUS_PER_NODE))
@@ -70,6 +71,9 @@ git apply nemo_mlperf.patch
 
 cd /workspace
 
+! HYDRA_FULL_ERROR=1 torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py trainer.max_steps=100 model.data.synthetic_data=True trainer.devices=8
+
+
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     --nnodes=${NNODES} \
@@ -83,35 +87,36 @@ torchrun  --nproc_per_node=${GPUS_PER_NODE} \
     trainer.max_epochs=10 \
     trainer.devices=$GPUS_PER_NODE \
     trainer.num_nodes=$NNODES \
-    model.global_batch_size=256
+    model.global_batch_size=128
 
 
-OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 RANK=1 \
-torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
-    trainer.max_steps=200 \
-    trainer.devices=8 \
-    trainer.num_nodes=$NNODES \
-    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
-    --config-name="sd-train-github.yaml"
-
-torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
-    trainer.max_steps=200 \
-    model.data.synthetic_data=True \
-    trainer.devices=8 \
-    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
-    --config-name="sd-train-github.yaml"
-
-OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 RANK=0 \
-torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
-    trainer.max_steps=1000 \
-    trainer.num_nodes=1 \
-    trainer.devices=8 \
-    model.data.synthetic_data=True \
-    --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
-    --config-name="sd-train-github.yaml"
-
-\{00000..00831\}.tar
-    model.data.webdataset.local_root_path="/gcs/hosseins-vertex-test/webdataset-moments-filtered/{00000..00831}.tar" \
+# OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 RANK=1 \
+# torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
+#     trainer.max_steps=200 \
+#     trainer.devices=8 \
+#     trainer.num_nodes=$NNODES \
+#     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+#     --config-name="sd-train-github.yaml"
+# 
+# torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
+#     trainer.max_steps=200 \
+#     model.data.synthetic_data=True \
+#     trainer.devices=8 \
+#     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+#     --config-name="sd-train-github.yaml"
+# 
+# OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 RANK=0 \
+# torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py \
+#     trainer.max_steps=1000 \
+#     trainer.num_nodes=1 \
+#     trainer.devices=8 \
+#     trainer.world_size=8 \
+#     model.data.synthetic_data=True \
+#     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
+#     --config-name="sd-train-github.yaml"
+# 
+# \{00000..00831\}.tar
+#     model.data.webdataset.local_root_path="/gcs/hosseins-vertex-test/webdataset-moments-filtered/{00000..00831}.tar" \
 
 echo "Training job is completed on RANK:$RANK"
 sleep infinity
