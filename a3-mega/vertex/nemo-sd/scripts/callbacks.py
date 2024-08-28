@@ -43,7 +43,7 @@ struct_copy_two = cuda_graph.struct_copy_two
 zero_grad = cuda_graph.zero_grad
 get_training_step = cuda_graph.get_training_step
 to_tensor = cuda_graph.to_tensor
-register_key = cuda_graph.register_key
+# register_key = cuda_graph.register_key
 update_metrics = cuda_graph.update_metrics
 
 
