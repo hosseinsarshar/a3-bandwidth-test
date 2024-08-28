@@ -76,7 +76,7 @@ git apply nemo_mlperf.patch
 
 cd /workspace
 
-! HYDRA_FULL_ERROR=1 torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py trainer.max_steps=100 model.data.synthetic_data=True trainer.devices=8
+! OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 torchrun /opt/NeMo/examples/multimodal/text_to_image/stable_diffusion/sd_train.py trainer.max_steps=10 model.data.synthetic_data=True trainer.devices=1
 
 
 OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \

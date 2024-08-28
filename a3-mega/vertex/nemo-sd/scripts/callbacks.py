@@ -326,8 +326,8 @@ class SDCallback(CUDAGraphCallback):
         # Use smart metrics to avoid syncs
         LightningModule.__orig_to_tensor__ = LightningModule._LightningModule__to_tensor
         LightningModule._LightningModule__to_tensor = to_tensor
-        _ResultCollection.__orig_register_key__ = _ResultCollection.register_key
-        _ResultCollection.register_key = register_key
+        # _ResultCollection.__orig_register_key__ = _ResultCollection.register_key
+        # _ResultCollection.register_key = register_key
         _ResultCollection.__orig_update_metrics__ = _ResultCollection.update_metrics
         _ResultCollection.update_metrics = update_metrics
 

@@ -152,6 +152,10 @@ export RDZV=$(if [[ $RANK -gt 0 ]]; then echo $MASTER_ADDR;else echo localhost;f
 # echo "sleep for 60 seconds"
 # sleep 60
 
+git clone https://github.com/mlperf/logging.git mlperf-logging
+pip install -e mlperf-logging
+
+
 wget https://huggingface.co/stabilityai/stable-diffusion-2-base/resolve/main/vae/diffusion_pytorch_model.bin
 mkdir -p /ckpts
 mv diffusion_pytorch_model.bin /ckpts/vae-2-base.bin
@@ -210,8 +214,6 @@ OMP_NUM_THREADS=12 RANK=$RANK HYDRA_FULL_ERROR=1 \
 python /workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/scripts/main.py \
     --config-path="/workspace/a3-bandwidth-test/a3-mega/vertex/nemo-sd/configs" \
     --config-name="lyiang-selected-config.yaml" \
-    +exp_manager.version="$JOB_IDENTIFIER" \
-    +exp_manager.exp_dir="/nemo-experiments/" \
     ++trainer.max_steps=200 \
     ++trainer.log_every_n_steps=1 \
     model.data.synthetic_data=True \
