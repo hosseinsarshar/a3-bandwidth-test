@@ -44,7 +44,7 @@ zero_grad = cuda_graph.zero_grad
 get_training_step = cuda_graph.get_training_step
 to_tensor = cuda_graph.to_tensor
 # register_key = cuda_graph.register_key
-update_metrics = cuda_graph.update_metrics
+# update_metrics = cuda_graph.update_metrics
 
 
 __all__ = ["SDCallback"]
@@ -328,8 +328,8 @@ class SDCallback(CUDAGraphCallback):
         LightningModule._LightningModule__to_tensor = to_tensor
         # _ResultCollection.__orig_register_key__ = _ResultCollection.register_key
         # _ResultCollection.register_key = register_key
-        _ResultCollection.__orig_update_metrics__ = _ResultCollection.update_metrics
-        _ResultCollection.update_metrics = update_metrics
+        # _ResultCollection.__orig_update_metrics__ = _ResultCollection.update_metrics
+        # _ResultCollection.update_metrics = update_metrics
 
         # Save model outputs to static buffer for PL states reconstruct
         pl_module.__orig_training_step__ = pl_module.training_step
